@@ -49,6 +49,8 @@ def AVRWrapper : SDNode<"AVRISD::WRAPPER", SDT_AVRWrapper>;
 
 def AVRbrcond : SDNode<"AVRISD::BRCOND", SDT_AVRBrcond,
                        [SDNPHasChain, SDNPInGlue]>;
+def AVRrbrcond : SDNode<"AVRISD::RBRCOND", SDT_AVRBrcond,
+                        [SDNPHasChain, SDNPInGlue]>;
 def AVRcmp : SDNode<"AVRISD::CMP", SDT_AVRCmp, [SDNPOutGlue]>;
 def AVRcmpc : SDNode<"AVRISD::CMPC", SDT_AVRCmp, [SDNPInGlue, SDNPOutGlue]>;
 def AVRtst : SDNode<"AVRISD::TST", SDT_AVRTst, [SDNPOutGlue]>;
@@ -1022,6 +1024,11 @@ Uses = [SREG] in
                     (ins relbrtarget_7:$target),
                     "breq\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_EQ)]>;
+  def RBREQk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brne\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_EQ)]>;
 
   def BRNEk : FBRsk<1,
                     0b001,
@@ -1029,14 +1036,24 @@ Uses = [SREG] in
                     (ins relbrtarget_7:$target),
                     "brne\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_NE)]>;
+  def RBRNEk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "breq\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_NE)]>;
 
-
+                       
   def BRSHk : FBRsk<1,
                     0b000,
                     (outs),
                     (ins relbrtarget_7:$target),
                     "brsh\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_SH)]>;
+  def RBRSHk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brlo\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_SH)]>;
 
   def BRLOk : FBRsk<0,
                     0b000,
@@ -1044,13 +1061,24 @@ Uses = [SREG] in
                     (ins relbrtarget_7:$target),
                     "brlo\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_LO)]>;
+  def RBRLOk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brsh\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_LO)]>;
 
+                    
   def BRMIk : FBRsk<0,
                     0b010,
                     (outs),
                     (ins relbrtarget_7:$target),
                     "brmi\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_MI)]>;
+  def RBRMIk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brpl\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_MI)]>;
 
   def BRPLk : FBRsk<1,
                     0b010,
@@ -1058,6 +1086,12 @@ Uses = [SREG] in
                     (ins relbrtarget_7:$target),
                     "brpl\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_PL)]>;
+  def RBRPLk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brmi\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_PL)]>;
+                       
 
   def BRGEk : FBRsk<1,
                     0b100,
@@ -1065,13 +1099,24 @@ Uses = [SREG] in
                     (ins relbrtarget_7:$target),
                     "brge\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_GE)]>;
-
+  def RBRGEk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brlt\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRrbrcond bb:$target, AVR_COND_GE)]>;
+  
   def BRLTk : FBRsk<0,
                     0b100,
                     (outs),
                     (ins relbrtarget_7:$target),
                     "brlt\t$target",
                     [(AVRbrcond bb:$target, AVR_COND_LT)]>;
+  def RBRLTk : Pseudo<(outs),
+                       (ins brtarget_13:$target),
+                       "brge\t.+2\n"
+                       "\trjmp\t$target",
+                       [(AVRbrcond bb:$target, AVR_COND_LT)]>;
+  
 }
 
 //===----------------------------------------------------------------------===//

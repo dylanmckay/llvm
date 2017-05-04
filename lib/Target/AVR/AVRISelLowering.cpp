@@ -245,6 +245,7 @@ const char *AVRTargetLowering::getTargetNodeName(unsigned Opcode) const {
     NODE(LSRLOOP);
     NODE(ASRLOOP);
     NODE(BRCOND);
+    NODE(RBRCOND);
     NODE(CMP);
     NODE(CMPC);
     NODE(TST);
@@ -608,7 +609,7 @@ SDValue AVRTargetLowering::LowerBR_CC(SDValue Op, SelectionDAG &DAG) const {
   SDValue TargetCC;
   SDValue Cmp = getAVRCmp(LHS, RHS, CC, TargetCC, DAG, dl);
 
-  return DAG.getNode(AVRISD::BRCOND, dl, MVT::Other, Chain, Dest, TargetCC,
+  return DAG.getNode(AVRISD::RBRCOND, dl, MVT::Other, Chain, Dest, TargetCC,
                      Cmp);
 }
 

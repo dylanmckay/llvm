@@ -197,21 +197,21 @@ const MCInstrDesc &AVRInstrInfo::getBrCond(AVRCC::CondCodes CC) const {
   default:
     llvm_unreachable("Unknown condition code!");
   case AVRCC::COND_EQ:
-    return get(AVR::BREQk);
+    return get(AVR::RBREQk);
   case AVRCC::COND_NE:
-    return get(AVR::BRNEk);
+    return get(AVR::RBRNEk);
   case AVRCC::COND_GE:
-    return get(AVR::BRGEk);
+    return get(AVR::RBRGEk);
   case AVRCC::COND_LT:
-    return get(AVR::BRLTk);
+    return get(AVR::RBRLTk);
   case AVRCC::COND_SH:
-    return get(AVR::BRSHk);
+    return get(AVR::RBRSHk);
   case AVRCC::COND_LO:
-    return get(AVR::BRLOk);
+    return get(AVR::RBRLOk);
   case AVRCC::COND_MI:
-    return get(AVR::BRMIk);
+    return get(AVR::RBRMIk);
   case AVRCC::COND_PL:
-    return get(AVR::BRPLk);
+    return get(AVR::RBRPLk);
   }
 }
 
@@ -220,20 +220,28 @@ AVRCC::CondCodes AVRInstrInfo::getCondFromBranchOpc(unsigned Opc) const {
   default:
     return AVRCC::COND_INVALID;
   case AVR::BREQk:
+  case AVR::RBREQk:
     return AVRCC::COND_EQ;
   case AVR::BRNEk:
+  case AVR::RBRNEk:
     return AVRCC::COND_NE;
   case AVR::BRSHk:
+  case AVR::RBRSHk:
     return AVRCC::COND_SH;
   case AVR::BRLOk:
+  case AVR::RBRLOk:
     return AVRCC::COND_LO;
   case AVR::BRMIk:
+  case AVR::RBRMIk:
     return AVRCC::COND_MI;
   case AVR::BRPLk:
+  case AVR::RBRPLk:
     return AVRCC::COND_PL;
   case AVR::BRGEk:
+  case AVR::RBRGEk:
     return AVRCC::COND_GE;
   case AVR::BRLTk:
+  case AVR::RBRLTk:
     return AVRCC::COND_LT;
   }
 }

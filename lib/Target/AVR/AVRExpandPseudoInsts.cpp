@@ -71,6 +71,7 @@ private:
 
   MachineRegisterInfo &getRegInfo(Block &MBB) { return MBB.getParent()->getRegInfo(); }
 
+  bool expandBR(Block &MBB, BlockIt MBBI, int OppositeOpcode);
   bool expandArith(unsigned OpLo, unsigned OpHi, Block &MBB, BlockIt MBBI);
   bool expandLogic(unsigned Op, Block &MBB, BlockIt MBBI);
   bool expandLogicImm(unsigned Op, Block &MBB, BlockIt MBBI);
@@ -1457,6 +1458,57 @@ bool AVRExpandPseudo::expand<AVR::SPWRITE>(Block &MBB, BlockIt MBBI) {
   return true;
 }
 
+bool AVRExpandPseudo::expandBR(Block &MBB, BlockIt MBBI, int OppositeOpcode) {
+  MachineInstr &MI = *MBBI;
+  MachineBasicBlock *targetMBB = MI.getOperand(0).getMBB();
+
+  buildMI(MBB, MBBI, OppositeOpcode).addImm(2);
+  buildMI(MBB, MBBI, AVR::RJMPk).addMBB(targetMBB);
+
+  MI.eraseFromParent();
+  return true;
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRGEk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRLTk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRLTk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRGEk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBREQk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRNEk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRNEk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BREQk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRSHk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRLOk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRLOk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRSHk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRPLk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRMIk);
+}
+
+template <>
+bool AVRExpandPseudo::expand<AVR::RBRMIk>(Block &MBB, BlockIt MBBI) {
+  return expandBR(MBB, MBBI, AVR::BRPLk);
+}
+
 bool AVRExpandPseudo::expandMI(Block &MBB, BlockIt MBBI) {
   MachineInstr &MI = *MBBI;
   int Opcode = MBBI->getOpcode();
@@ -1522,6 +1574,14 @@ bool AVRExpandPseudo::expandMI(Block &MBB, BlockIt MBBI) {
     EXPAND(AVR::ZEXT);
     EXPAND(AVR::SPREAD);
     EXPAND(AVR::SPWRITE);
+    EXPAND(AVR::RBRGEk);
+    EXPAND(AVR::RBRLTk);
+    EXPAND(AVR::RBREQk);
+    EXPAND(AVR::RBRNEk);
+    EXPAND(AVR::RBRSHk);
+    EXPAND(AVR::RBRLOk);
+    EXPAND(AVR::RBRMIk);
+    EXPAND(AVR::RBRPLk);
   }
 #undef EXPAND
   return false;

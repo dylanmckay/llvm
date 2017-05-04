@@ -50,7 +50,7 @@ enum NodeType {
   /// is the block to branch if condition is true, operand 2 is the
   /// condition code, and operand 3 is the flag operand produced by a CMP
   /// or TEST instruction.
-  BRCOND,
+  BRCOND, RBRCOND,
   /// Compare instruction.
   CMP,
   /// Compare with carry instruction.
