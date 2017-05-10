@@ -36,6 +36,7 @@ enum NodeType {
   /// A wrapper node for TargetConstantPool,
   /// TargetExternalSymbol, and TargetGlobalAddress.
   WRAPPER,
+  PROGMEM_WRAPPER,
   LSL,     ///< Logical shift left.
   LSR,     ///< Logical shift right.
   ASR,     ///< Arithmetic shift right.

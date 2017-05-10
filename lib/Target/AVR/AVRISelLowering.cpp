@@ -236,6 +236,7 @@ const char *AVRTargetLowering::getTargetNodeName(unsigned Opcode) const {
     NODE(RETI_FLAG);
     NODE(CALL);
     NODE(WRAPPER);
+    NODE(PROGMEM_WRAPPER);
     NODE(LSL);
     NODE(LSR);
     NODE(ROL);
@@ -381,13 +382,20 @@ SDValue AVRTargetLowering::LowerGlobalAddress(SDValue Op,
                                               SelectionDAG &DAG) const {
   auto DL = DAG.getDataLayout();
 
-  const GlobalValue *GV = cast<GlobalAddressSDNode>(Op)->getGlobal();
+  const auto *GA = cast<GlobalAddressSDNode>(Op);
+  const GlobalValue *GV = GA->getGlobal();
+
+  unsigned Wrapper = AVRISD::WRAPPER;
+  if (const auto *GVar = dyn_cast<GlobalVariable>(GV))
+      if (GVar->isConstant())
+          Wrapper = AVRISD::PROGMEM_WRAPPER;
+
   int64_t Offset = cast<GlobalAddressSDNode>(Op)->getOffset();
 
   // Create the TargetGlobalAddress node, folding in the constant offset.
   SDValue Result =
       DAG.getTargetGlobalAddress(GV, SDLoc(Op), getPointerTy(DL), Offset);
-  return DAG.getNode(AVRISD::WRAPPER, SDLoc(Op), getPointerTy(DL), Result);
+  return DAG.getNode(Wrapper, SDLoc(Op), getPointerTy(DL), Result);
 }
 
 SDValue AVRTargetLowering::LowerBlockAddress(SDValue Op,

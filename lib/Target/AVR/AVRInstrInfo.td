@@ -21,6 +21,7 @@ def SDT_AVRCallSeqStart : SDCallSeqStart<[SDTCisVT<0, i16>]>;
 def SDT_AVRCallSeqEnd : SDCallSeqEnd<[SDTCisVT<0, i16>, SDTCisVT<1, i16>]>;
 def SDT_AVRCall : SDTypeProfile<0, -1, [SDTCisVT<0, iPTR>]>;
 def SDT_AVRWrapper : SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>, SDTCisPtrTy<0>]>;
+def SDT_AVRProgMemWrapper : SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>, SDTCisPtrTy<0>]>;
 def SDT_AVRBrcond : SDTypeProfile<0, 2,
                                   [SDTCisVT<0, OtherVT>, SDTCisVT<1, i8>]>;
 def SDT_AVRCmp : SDTypeProfile<0, 2, [SDTCisSameAs<0, 1>]>;
@@ -46,6 +47,7 @@ def AVRcall : SDNode<"AVRISD::CALL", SDT_AVRCall,
                      [SDNPHasChain, SDNPOutGlue, SDNPOptInGlue, SDNPVariadic]>;
 
 def AVRWrapper : SDNode<"AVRISD::WRAPPER", SDT_AVRWrapper>;
+def AVRProgMemWrapper : SDNode<"AVRISD::PROGMEM_WRAPPER", SDT_AVRProgMemWrapper>;
 
 def AVRbrcond : SDNode<"AVRISD::BRCOND", SDT_AVRBrcond,
                        [SDNPHasChain, SDNPInGlue]>;
@@ -2033,9 +2035,9 @@ def Asr16 : ShiftPseudo<
 // Non-Instruction Patterns
 //===----------------------------------------------------------------------===//
 
-def : Pat<(i8 (load (add i16:$offset, (AVRWrapper tglobaladdr:$base)))),
+def : Pat<(i8 (load (add i16:$offset, (AVRProgMemWrapper tglobaladdr:$base)))),
           (LPMRdZ (SUBIWRdK i16:$offset, tglobaladdr:$base))>;
-def : Pat<(i16 (load (add i16:$offset, (AVRWrapper tglobaladdr:$base)))),
+def : Pat<(i16 (load (add i16:$offset, (AVRProgMemWrapper tglobaladdr:$base)))),
           (LPMWRdZ (SUBIWRdK i16:$offset, tglobaladdr:$base))>;
 
 //:TODO: look in x86InstrCompiler.td for odd encoding trick related to
