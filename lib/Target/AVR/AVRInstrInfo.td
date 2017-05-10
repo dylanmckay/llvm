@@ -2033,8 +2033,10 @@ def Asr16 : ShiftPseudo<
 // Non-Instruction Patterns
 //===----------------------------------------------------------------------===//
 
-def : Pat<(load (add i16:$offset, (AVRWrapper tglobaladdr:$base))),
+def : Pat<(i8 (load (add i16:$offset, (AVRWrapper tglobaladdr:$base)))),
           (LPMRdZ (SUBIWRdK i16:$offset, tglobaladdr:$base))>;
+def : Pat<(i16 (load (add i16:$offset, (AVRWrapper tglobaladdr:$base)))),
+          (LPMWRdZ (SUBIWRdK i16:$offset, tglobaladdr:$base))>;
 
 //:TODO: look in x86InstrCompiler.td for odd encoding trick related to
 // add x, 128 -> sub x, -128. Clang is emitting an eor for this (ldi+eor)
