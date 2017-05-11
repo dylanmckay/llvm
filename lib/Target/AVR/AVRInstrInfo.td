@@ -2109,6 +2109,10 @@ def : Pat<(store i8:$src, (i16 (AVRWrapper tglobaladdr:$dst))),
 def : Pat<(store i16:$src, (i16 (AVRWrapper tglobaladdr:$dst))),
           (STSWKRr tglobaladdr:$dst, i16:$src)>;
 
+// Temporary workaround -- this one is BOGUS!
+def : Pat<(i16 (AVRProgMemWrapper tglobaladdr:$dst)),
+          (LDIWRdK tglobaladdr:$dst)>;
+
 // BlockAddress
 def : Pat<(i16 (AVRWrapper tblockaddress:$dst)),
           (LDIWRdK tblockaddress:$dst)>;
