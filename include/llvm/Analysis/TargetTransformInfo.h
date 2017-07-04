@@ -269,7 +269,7 @@ public:
   /// pointer with this address space is expected to be legal but slower
   /// compared to the same memory location accessed through a pointer with a
   /// different address space.
-  //
+  ///
   /// This is for for targets with different pointer representations which can
   /// be converted with the addrspacecast instruction. If a pointer is converted
   /// to this address space, optimizations should attempt to replace the access
@@ -278,6 +278,14 @@ public:
   /// \returns ~0u if the target does not have such a flat address space to
   /// optimize away.
   unsigned getFlatAddressSpace() const;
+
+  /// Returns the address space ID that switch lookup tables should be placed
+  /// into.
+  ///
+  /// This is useful for Harvard architectures where you often want to place
+  /// lookup tables into a different address space (for example, in AVR, lookup
+  /// tables reside in the 'program memory' space.
+  unsigned getSwitchTableAddressSpace() const;
 
   /// \brief Test whether calls to a function lower to actual program function
   /// calls.
@@ -879,6 +887,8 @@ public:
   virtual bool isSourceOfDivergence(const Value *V) = 0;
   virtual bool isAlwaysUniform(const Value *V) = 0;
   virtual unsigned getFlatAddressSpace() = 0;
+  virtual unsigned getSwitchTableAddressSpace() const = 0;
+
   virtual bool isLoweredToCall(const Function *F) = 0;
   virtual void getUnrollingPreferences(Loop *L, ScalarEvolution &,
                                        UnrollingPreferences &UP) = 0;
@@ -1074,6 +1084,10 @@ public:
 
   unsigned getFlatAddressSpace() override {
     return Impl.getFlatAddressSpace();
+  }
+
+  unsigned getSwitchTableAddressSpace() const override {
+    return Impl.getSwitchTableAddressSpace();
   }
 
   bool isLoweredToCall(const Function *F) override {

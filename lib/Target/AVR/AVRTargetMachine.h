@@ -37,6 +37,8 @@ public:
   const AVRSubtarget *getSubtargetImpl() const;
   const AVRSubtarget *getSubtargetImpl(const Function &) const override;
 
+  TargetIRAnalysis getTargetIRAnalysis() override;
+
   TargetLoweringObjectFile *getObjFileLowering() const override {
     return this->TLOF.get();
   }

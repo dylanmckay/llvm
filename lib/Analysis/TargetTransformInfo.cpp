@@ -123,6 +123,10 @@ unsigned TargetTransformInfo::getFlatAddressSpace() const {
   return TTIImpl->getFlatAddressSpace();
 }
 
+unsigned TargetTransformInfo::getSwitchTableAddressSpace() const {
+  return TTIImpl->getSwitchTableAddressSpace();
+}
+
 bool TargetTransformInfo::isLoweredToCall(const Function *F) const {
   return TTIImpl->isLoweredToCall(F);
 }

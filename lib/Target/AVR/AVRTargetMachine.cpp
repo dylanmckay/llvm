@@ -21,6 +21,7 @@
 
 #include "AVR.h"
 #include "AVRTargetObjectFile.h"
+#include "AVRTargetTransformInfo.h"
 #include "MCTargetDesc/AVRMCTargetDesc.h"
 
 namespace llvm {
@@ -58,6 +59,12 @@ AVRTargetMachine::AVRTargetMachine(const Target &T, const Triple &TT,
       SubTarget(TT, getCPU(CPU), FS, *this) {
   this->TLOF = make_unique<AVRTargetObjectFile>();
   initAsmInfo();
+}
+
+TargetIRAnalysis AVRTargetMachine::getTargetIRAnalysis() {
+  return TargetIRAnalysis([this](const Function &F) {
+    return TargetTransformInfo(AVRTTIImpl(this, F));
+  });
 }
 
 namespace {

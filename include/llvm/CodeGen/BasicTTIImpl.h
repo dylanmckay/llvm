@@ -100,6 +100,8 @@ public:
     return -1;
   }
 
+  unsigned getSwitchTableAddressSpace() const { return 0; }
+
   bool isLegalAddImmediate(int64_t imm) {
     return getTLI()->isLegalAddImmediate(imm);
   }

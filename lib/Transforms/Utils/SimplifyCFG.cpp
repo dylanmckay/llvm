@@ -4783,7 +4783,8 @@ public:
   SwitchLookupTable(
       Module &M, uint64_t TableSize, ConstantInt *Offset,
       const SmallVectorImpl<std::pair<ConstantInt *, Constant *>> &Values,
-      Constant *DefaultValue, const DataLayout &DL, const StringRef &FuncName);
+      Constant *DefaultValue, const DataLayout &DL, const StringRef &FuncName,
+      const TargetTransformInfo &TTI);
 
   /// Build instructions with Builder to retrieve the value at
   /// the position given by Index in the lookup table.
@@ -4837,7 +4838,8 @@ private:
 SwitchLookupTable::SwitchLookupTable(
     Module &M, uint64_t TableSize, ConstantInt *Offset,
     const SmallVectorImpl<std::pair<ConstantInt *, Constant *>> &Values,
-    Constant *DefaultValue, const DataLayout &DL, const StringRef &FuncName)
+    Constant *DefaultValue, const DataLayout &DL, const StringRef &FuncName,
+    const TargetTransformInfo &TTI)
     : SingleValue(nullptr), BitMap(nullptr), BitMapElementTy(nullptr),
       LinearOffset(nullptr), LinearMultiplier(nullptr), Array(nullptr) {
   assert(Values.size() && "Can't build lookup table without values!");
@@ -4945,7 +4947,10 @@ SwitchLookupTable::SwitchLookupTable(
 
   Array = new GlobalVariable(M, ArrayTy, /*constant=*/true,
                              GlobalVariable::PrivateLinkage, Initializer,
-                             "switch.table." + FuncName);
+                             "switch.table." + FuncName,
+                             /*InsertBefore=*/nullptr,
+                             GlobalValue::NotThreadLocal,
+                             TTI.getSwitchTableAddressSpace());
   Array->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
   Kind = ArrayKind;
 }
@@ -5340,7 +5345,7 @@ static bool SwitchToLookupTable(SwitchInst *SI, IRBuilder<> &Builder,
     Constant *DV = NeedMask ? ResultLists[PHI][0].second : DefaultResults[PHI];
     StringRef FuncName = Fn->getName();
     SwitchLookupTable Table(Mod, TableSize, MinCaseVal, ResultList, DV, DL,
-                            FuncName);
+                            FuncName, TTI);
 
     Value *Result = Table.BuildLookup(TableIndex, Builder);
 
