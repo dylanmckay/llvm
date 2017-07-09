@@ -84,7 +84,7 @@ LLVMTargetMachine::LLVMTargetMachine(const Target &T,
 
 TargetIRAnalysis LLVMTargetMachine::getTargetIRAnalysis() {
   return TargetIRAnalysis([this](const Function &F) {
-    return TargetTransformInfo(BasicTTIImpl(this, F));
+    return TargetTransformInfo(BasicTTIImpl<>(this, F));
   });
 }
 

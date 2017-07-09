@@ -268,7 +268,7 @@ TargetIRAnalysis MipsTargetMachine::getTargetIRAnalysis() {
     }
 
     DEBUG(errs() << "Target Transform Info Pass Added\n");
-    return TargetTransformInfo(BasicTTIImpl(this, F));
+    return TargetTransformInfo(BasicTTIImpl<>(this, F));
   });
 }
 

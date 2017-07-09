@@ -187,8 +187,6 @@ public:
     return -1;
   }
 
-  unsigned getSwitchTableAddressSpace() const { return 0; }
-
   bool isLoweredToCall(const Function *F) {
     // FIXME: These should almost certainly not be handled here, and instead
     // handled with the help of TLI or the target itself. This was largely
@@ -594,9 +592,24 @@ protected:
   }
 };
 
+/// A memory architecture where the program and the data live in
+/// separate address spaces.
+template<unsigned ProgramSpace = 1, unsigned DataSpace = 0>
+class HarvardArchitecture {
+public:
+  static unsigned getSwitchTableAddressSpace() { return ProgramSpace; }
+};
+
+/// A memory architecture where the program and the data live in the
+/// same address space.
+class VonNeumannArchitecture {
+public:
+  static unsigned getSwitchTableAddressSpace() { return 0; }
+};
+
 /// \brief CRTP base class for use as a mix-in that aids implementing
 /// a TargetTransformInfo-compatible class.
-template <typename T>
+template <typename T, typename MemArch>
 class TargetTransformInfoImplCRTPBase : public TargetTransformInfoImplBase {
 private:
   typedef TargetTransformInfoImplBase BaseT;
@@ -741,6 +754,10 @@ public:
     return static_cast<T *>(this)->getOperationCost(
         Operator::getOpcode(U), U->getType(),
         U->getNumOperands() == 1 ? U->getOperand(0)->getType() : nullptr);
+  }
+
+  unsigned getSwitchTableAddressSpace() const {
+    return MemArch::getSwitchTableAddressSpace();
   }
 };
 }

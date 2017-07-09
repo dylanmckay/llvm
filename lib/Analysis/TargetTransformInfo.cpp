@@ -34,9 +34,9 @@ namespace {
 /// classes.
 ///
 /// This is used when no target specific information is available.
-struct NoTTIImpl : TargetTransformInfoImplCRTPBase<NoTTIImpl> {
+struct NoTTIImpl : TargetTransformInfoImplCRTPBase<NoTTIImpl, VonNeumannArchitecture> {
   explicit NoTTIImpl(const DataLayout &DL)
-      : TargetTransformInfoImplCRTPBase<NoTTIImpl>(DL) {}
+      : TargetTransformInfoImplCRTPBase<NoTTIImpl, VonNeumannArchitecture>(DL) {}
 };
 }
 

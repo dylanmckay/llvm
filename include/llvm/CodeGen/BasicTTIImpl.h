@@ -27,6 +27,9 @@ namespace llvm {
 
 extern cl::opt<unsigned> PartialUnrollingThreshold;
 
+/// The default memory architecture.
+typedef VonNeumannArchitecture DefaultMemArch;
+
 /// \brief Base class which can be used to help build a TTI implementation.
 ///
 /// This class provides as much implementation of the TTI interface as is
@@ -36,10 +39,10 @@ extern cl::opt<unsigned> PartialUnrollingThreshold;
 /// return the subtarget, and a getTLI() method to return the target lowering.
 /// We need these methods implemented in the derived class so that this class
 /// doesn't have to duplicate storage for them.
-template <typename T>
-class BasicTTIImplBase : public TargetTransformInfoImplCRTPBase<T> {
+template <typename T, typename MemArch = DefaultMemArch>
+class BasicTTIImplBase : public TargetTransformInfoImplCRTPBase<T, MemArch> {
 private:
-  typedef TargetTransformInfoImplCRTPBase<T> BaseT;
+  typedef TargetTransformInfoImplCRTPBase<T, MemArch> BaseT;
   typedef TargetTransformInfo TTI;
 
   /// Estimate a cost of shuffle as a sequence of extract and insert
@@ -99,8 +102,6 @@ public:
     // Return an invalid address space.
     return -1;
   }
-
-  unsigned getSwitchTableAddressSpace() const { return 0; }
 
   bool isLegalAddImmediate(int64_t imm) {
     return getTLI()->isLegalAddImmediate(imm);
@@ -1175,9 +1176,10 @@ public:
 
 /// \brief Concrete BasicTTIImpl that can be used if no further customization
 /// is needed.
-class BasicTTIImpl : public BasicTTIImplBase<BasicTTIImpl> {
-  typedef BasicTTIImplBase<BasicTTIImpl> BaseT;
-  friend class BasicTTIImplBase<BasicTTIImpl>;
+template<typename MemArch = DefaultMemArch>
+class BasicTTIImpl : public BasicTTIImplBase<BasicTTIImpl<MemArch>, MemArch> {
+  typedef BasicTTIImplBase<BasicTTIImpl, MemArch> BaseT;
+  friend class BasicTTIImplBase<BasicTTIImpl, MemArch>;
 
   const TargetSubtargetInfo *ST;
   const TargetLoweringBase *TLI;
@@ -1186,7 +1188,9 @@ class BasicTTIImpl : public BasicTTIImplBase<BasicTTIImpl> {
   const TargetLoweringBase *getTLI() const { return TLI; }
 
 public:
-  explicit BasicTTIImpl(const TargetMachine *ST, const Function &F);
+  explicit BasicTTIImpl(const TargetMachine *TM, const Function &F)
+   : BaseT(TM, F.getParent()->getDataLayout()), ST(TM->getSubtargetImpl(F)),
+     TLI(ST->getTargetLowering()) {}
 };
 
 }

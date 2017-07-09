@@ -25,8 +25,8 @@
 #include "llvm/Target/TargetLowering.h"
 
 namespace llvm {
-class AVRTTIImpl : public BasicTTIImplBase<AVRTTIImpl> {
-  typedef BasicTTIImplBase<AVRTTIImpl> BaseT;
+class AVRTTIImpl : public BasicTTIImplBase<AVRTTIImpl, HarvardArchitecture<>> {
+  typedef BasicTTIImplBase<AVRTTIImpl, HarvardArchitecture<>> BaseT;
   typedef TargetTransformInfo TTI;
   friend BaseT;
 
