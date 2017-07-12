@@ -181,6 +181,7 @@ void DataLayout::reset(StringRef Desc) {
   BigEndian = false;
   AllocaAddrSpace = 0;
   StackNaturalAlign = 0;
+  ProgramAddrSpace = 0;
   ManglingMode = MM_None;
   NonIntegralAddressSpaces.clear();
 
@@ -219,6 +220,13 @@ static unsigned inBytes(unsigned Bits) {
   if (Bits % 8)
     report_fatal_error("number of bits must be a byte width multiple");
   return Bits / 8;
+}
+
+static unsigned getAddrSpace(StringRef R) {
+  unsigned AddrSpace = getInt(R);
+  if (!isUInt<24>(AddrSpace))
+    report_fatal_error("Invalid address space, must be a 24-bit integer");
+  return AddrSpace;
 }
 
 void DataLayout::parseSpecifier(StringRef Desc) {
@@ -358,10 +366,12 @@ void DataLayout::parseSpecifier(StringRef Desc) {
       StackNaturalAlign = inBytes(getInt(Tok));
       break;
     }
+    case 'P': { // Function address space.
+      ProgramAddrSpace = getAddrSpace(Tok);
+      break;
+    }
     case 'A': { // Default stack/alloca address space.
-      AllocaAddrSpace = getInt(Tok);
-      if (!isUInt<24>(AllocaAddrSpace))
-        report_fatal_error("Invalid address space, must be a 24bit integer");
+      AllocaAddrSpace = getAddrSpace(Tok);
       break;
     }
     case 'm':
