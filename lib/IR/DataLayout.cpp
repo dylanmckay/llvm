@@ -181,6 +181,7 @@ void DataLayout::reset(StringRef Desc) {
   BigEndian = false;
   AllocaAddrSpace = 0;
   StackNaturalAlign = 0;
+  ProgramAddrSpace = 0;
   ManglingMode = MM_None;
   NonIntegralAddressSpaces.clear();
 
@@ -356,6 +357,10 @@ void DataLayout::parseSpecifier(StringRef Desc) {
       break;
     case 'S': { // Stack natural alignment.
       StackNaturalAlign = inBytes(getInt(Tok));
+      break;
+    }
+    case 'P': { // Function address space.
+      ProgramAddrSpace = inBytes(getInt(Tok));
       break;
     }
     case 'A': { // Default stack/alloca address space.
