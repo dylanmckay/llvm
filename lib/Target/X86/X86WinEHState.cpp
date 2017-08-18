@@ -177,7 +177,8 @@ bool WinEHStatePass::runOnFunction(Function &F) {
       "_setjmp3", FunctionType::get(
                       Type::getInt32Ty(TheModule->getContext()),
                       {Int8PtrType, Type::getInt32Ty(TheModule->getContext())},
-                      /*isVarArg=*/true));
+                      /*isVarArg=*/true,
+                      TheModule->getDataLayout().getProgramAddressSpace()));
 
   // Disable frame pointer elimination in this function.
   // FIXME: Do the nested handlers need to keep the parent ebp in ebp, or can we
@@ -301,7 +302,8 @@ void WinEHStatePass::emitExceptionRegistrationRecord(Function *F) {
 
     CxxLongjmpUnwind = TheModule->getOrInsertFunction(
         "__CxxLongjmpUnwind",
-        FunctionType::get(VoidTy, Int8PtrType, /*isVarArg=*/false));
+        FunctionType::get(VoidTy, Int8PtrType, /*isVarArg=*/false,
+                          TheModule->getDataLayout().getProgramAddressSpace()));
     cast<Function>(CxxLongjmpUnwind->stripPointerCasts())
         ->setCallingConv(CallingConv::X86_StdCall);
   } else if (Personality == EHPersonality::MSVC_X86SEH) {
@@ -386,16 +388,17 @@ Value *WinEHStatePass::emitEHLSDA(IRBuilder<> &Builder, Function *F) {
 ///   jmpl ___CxxFrameHandler3
 Function *WinEHStatePass::generateLSDAInEAXThunk(Function *ParentFunc) {
   LLVMContext &Context = ParentFunc->getContext();
+  const auto &DL = ParentFunc->getParent()->getDataLayout();
   Type *Int32Ty = Type::getInt32Ty(Context);
   Type *Int8PtrType = Type::getInt8PtrTy(Context);
   Type *ArgTys[5] = {Int8PtrType, Int8PtrType, Int8PtrType, Int8PtrType,
                      Int8PtrType};
   FunctionType *TrampolineTy =
       FunctionType::get(Int32Ty, makeArrayRef(&ArgTys[0], 4),
-                        /*isVarArg=*/false);
+                        /*isVarArg=*/false, DL.getProgramAddressSpace());
   FunctionType *TargetFuncTy =
       FunctionType::get(Int32Ty, makeArrayRef(&ArgTys[0], 5),
-                        /*isVarArg=*/false);
+                        /*isVarArg=*/false, DL.getProgramAddressSpace());
   Function *Trampoline =
       Function::Create(TrampolineTy, GlobalValue::InternalLinkage,
                        Twine("__ehhandler$") + GlobalValue::dropLLVMManglingEscape(

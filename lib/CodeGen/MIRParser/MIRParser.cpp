@@ -268,7 +268,8 @@ bool MIRParserImpl::parseMachineFunctions(Module &M, MachineModuleInfo &MMI) {
 static Function *createDummyFunction(StringRef Name, Module &M) {
   auto &Context = M.getContext();
   Function *F = cast<Function>(M.getOrInsertFunction(
-      Name, FunctionType::get(Type::getVoidTy(Context), false)));
+      Name, FunctionType::get(Type::getVoidTy(Context), false,
+                              M.getDataLayout().getProgramAddressSpace())));
   BasicBlock *BB = BasicBlock::Create(Context, "entry", F);
   new UnreachableInst(Context, BB);
   return F;

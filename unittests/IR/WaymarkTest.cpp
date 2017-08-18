@@ -26,7 +26,7 @@ TEST(WaymarkTest, NativeArray) {
   std::transform(tail, tail + 22, values, [&](char c) {
     return ConstantInt::get(Type::getInt8Ty(Context), c);
   });
-  FunctionType *FT = FunctionType::get(Type::getVoidTy(Context), true);
+  FunctionType *FT = FunctionType::get(Type::getVoidTy(Context), true, 0);
   std::unique_ptr<Function> F(
       Function::Create(FT, GlobalValue::ExternalLinkage));
   const CallInst *A = CallInst::Create(F.get(), makeArrayRef(values));

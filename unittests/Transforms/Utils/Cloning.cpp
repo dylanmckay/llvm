@@ -158,7 +158,7 @@ TEST_F(CloneInstruction, Exact) {
 
 TEST_F(CloneInstruction, Attributes) {
   Type *ArgTy1[] = { Type::getInt32PtrTy(context) };
-  FunctionType *FT1 =  FunctionType::get(Type::getVoidTy(context), ArgTy1, false);
+  FunctionType *FT1 =  FunctionType::get(Type::getVoidTy(context), ArgTy1, false, 0);
 
   Function *F1 = Function::Create(FT1, Function::ExternalLinkage);
   BasicBlock *BB = BasicBlock::Create(context, "", F1);
@@ -183,7 +183,7 @@ TEST_F(CloneInstruction, Attributes) {
 
 TEST_F(CloneInstruction, CallingConvention) {
   Type *ArgTy1[] = { Type::getInt32PtrTy(context) };
-  FunctionType *FT1 =  FunctionType::get(Type::getVoidTy(context), ArgTy1, false);
+  FunctionType *FT1 =  FunctionType::get(Type::getVoidTy(context), ArgTy1, false, 0);
 
   Function *F1 = Function::Create(FT1, Function::ExternalLinkage);
   F1->setCallingConv(CallingConv::Cold);
@@ -206,7 +206,7 @@ TEST_F(CloneInstruction, CallingConvention) {
 
 TEST_F(CloneInstruction, DuplicateInstructionsToSplit) {
   Type *ArgTy1[] = {Type::getInt32PtrTy(context)};
-  FunctionType *FT = FunctionType::get(Type::getVoidTy(context), ArgTy1, false);
+  FunctionType *FT = FunctionType::get(Type::getVoidTy(context), ArgTy1, false, 0);
   V = new Argument(Type::getInt32Ty(context));
 
   Function *F = Function::Create(FT, Function::ExternalLinkage);
@@ -267,7 +267,7 @@ protected:
   }
 
   void CreateOldFunc() {
-    FunctionType* FuncType = FunctionType::get(Type::getVoidTy(C), false);
+    FunctionType* FuncType = FunctionType::get(Type::getVoidTy(C), false, 0);
     OldFunc = Function::Create(FuncType, GlobalValue::PrivateLinkage, "f", M);
     CreateOldFunctionBodyAndDI();
   }
@@ -484,7 +484,7 @@ protected:
     DIBuilder DBuilder(*OldM);
     IRBuilder<> IBuilder(C);
 
-    auto *FuncType = FunctionType::get(Type::getVoidTy(C), false);
+    auto *FuncType = FunctionType::get(Type::getVoidTy(C), false, 0);
     auto *PersFn = Function::Create(FuncType, GlobalValue::ExternalLinkage,
                                     "persfn", OldM);
     auto *F =

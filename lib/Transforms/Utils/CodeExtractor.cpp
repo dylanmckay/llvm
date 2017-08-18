@@ -575,7 +575,8 @@ Function *CodeExtractor::constructFunction(const ValueSet &inputs,
     paramTy.push_back(PointerType::getUnqual(StructTy));
   }
   FunctionType *funcType =
-                  FunctionType::get(RetTy, paramTy, false);
+                  FunctionType::get(RetTy, paramTy, false,
+                                    oldFunction->getAddressSpace());
 
   // Create the new function
   Function *newFunction = Function::Create(funcType,

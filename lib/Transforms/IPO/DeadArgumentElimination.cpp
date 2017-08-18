@@ -142,7 +142,8 @@ bool DeadArgumentEliminationPass::DeleteDeadVarargs(Function &Fn) {
 
   std::vector<Type*> Params(FTy->param_begin(), FTy->param_end());
   FunctionType *NFTy = FunctionType::get(FTy->getReturnType(),
-                                                Params, false);
+                                         Params, false,
+                                         FTy->getAddressSpace());
   unsigned NumArgs = Params.size();
 
   // Create the new function body and insert it into the module...
@@ -790,7 +791,8 @@ bool DeadArgumentEliminationPass::RemoveDeadStuffFromFunction(Function *F) {
       F->getContext(), PAL.getFnAttributes(), RetAttrs, ArgAttrVec);
 
   // Create the new function type based on the recomputed parameters.
-  FunctionType *NFTy = FunctionType::get(NRetTy, Params, FTy->isVarArg());
+  FunctionType *NFTy = FunctionType::get(NRetTy, Params, FTy->isVarArg(),
+                                         FTy->getAddressSpace());
 
   // No change?
   if (NFTy == FTy)

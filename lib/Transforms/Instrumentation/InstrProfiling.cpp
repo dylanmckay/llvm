@@ -484,6 +484,7 @@ static Constant *getOrInsertValueProfilingCall(Module &M,
                                                const TargetLibraryInfo &TLI,
                                                bool IsRange = false) {
   LLVMContext &Ctx = M.getContext();
+  const auto &DL = M.getDataLayout();
   auto *ReturnTy = Type::getVoidTy(M.getContext());
 
   Constant *Res;
@@ -493,7 +494,8 @@ static Constant *getOrInsertValueProfilingCall(Module &M,
 #include "llvm/ProfileData/InstrProfData.inc"
     };
     auto *ValueProfilingCallTy =
-        FunctionType::get(ReturnTy, makeArrayRef(ParamTypes), false);
+        FunctionType::get(ReturnTy, makeArrayRef(ParamTypes), false,
+                          DL.getProgramAddressSpace());
     Res = M.getOrInsertFunction(getInstrProfValueProfFuncName(),
                                 ValueProfilingCallTy);
   } else {
@@ -504,7 +506,8 @@ static Constant *getOrInsertValueProfilingCall(Module &M,
 #undef VALUE_RANGE_PROF
     };
     auto *ValueRangeProfilingCallTy =
-        FunctionType::get(ReturnTy, makeArrayRef(RangeParamTypes), false);
+        FunctionType::get(ReturnTy, makeArrayRef(RangeParamTypes), false,
+                          DL.getProgramAddressSpace());
     Res = M.getOrInsertFunction(getInstrProfValueRangeProfFuncName(),
                                 ValueRangeProfilingCallTy);
   }
@@ -852,6 +855,8 @@ void InstrProfiling::emitNameData() {
 }
 
 void InstrProfiling::emitRegistration() {
+  const auto &DL = M->getDataLayout();
+
   if (!needsRuntimeRegistrationOfSectionRange(*M))
     return;
 
@@ -859,7 +864,8 @@ void InstrProfiling::emitRegistration() {
   auto *VoidTy = Type::getVoidTy(M->getContext());
   auto *VoidPtrTy = Type::getInt8PtrTy(M->getContext());
   auto *Int64Ty = Type::getInt64Ty(M->getContext());
-  auto *RegisterFTy = FunctionType::get(VoidTy, false);
+  auto *RegisterFTy = FunctionType::get(VoidTy, false,
+                                        DL.getProgramAddressSpace());
   auto *RegisterF = Function::Create(RegisterFTy, GlobalValue::InternalLinkage,
                                      getInstrProfRegFuncsName(), M);
   RegisterF->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
@@ -879,7 +885,8 @@ void InstrProfiling::emitRegistration() {
   if (NamesVar) {
     Type *ParamTypes[] = {VoidPtrTy, Int64Ty};
     auto *NamesRegisterTy =
-        FunctionType::get(VoidTy, makeArrayRef(ParamTypes), false);
+        FunctionType::get(VoidTy, makeArrayRef(ParamTypes), false,
+                          DL.getProgramAddressSpace());
     auto *NamesRegisterF =
         Function::Create(NamesRegisterTy, GlobalVariable::ExternalLinkage,
                          getInstrProfNamesRegFuncName(), M);
@@ -891,6 +898,8 @@ void InstrProfiling::emitRegistration() {
 }
 
 void InstrProfiling::emitRuntimeHook() {
+  const auto &DL = M->getDataLayout();
+
   // We expect the linker to be invoked with -u<hook_var> flag for linux,
   // for which case there is no need to emit the user function.
   if (Triple(M->getTargetTriple()).isOSLinux())
@@ -907,7 +916,8 @@ void InstrProfiling::emitRuntimeHook() {
                          nullptr, getInstrProfRuntimeHookVarName());
 
   // Make a function that uses it.
-  auto *User = Function::Create(FunctionType::get(Int32Ty, false),
+  auto *User = Function::Create(FunctionType::get(Int32Ty, false,
+                                                  DL.getProgramAddressSpace()),
                                 GlobalValue::LinkOnceODRLinkage,
                                 getInstrProfRuntimeHookVarUseFuncName(), M);
   User->addFnAttr(Attribute::NoInline);
@@ -931,6 +941,7 @@ void InstrProfiling::emitUses() {
 }
 
 void InstrProfiling::emitInitialization() {
+  const auto &DL = M->getDataLayout();
   StringRef InstrProfileOutput = Options.InstrProfileOutput;
 
   if (!InstrProfileOutput.empty()) {
@@ -953,7 +964,8 @@ void InstrProfiling::emitInitialization() {
 
   // Create the initialization function.
   auto *VoidTy = Type::getVoidTy(M->getContext());
-  auto *F = Function::Create(FunctionType::get(VoidTy, false),
+  auto *F = Function::Create(FunctionType::get(VoidTy, false,
+                                               DL.getProgramAddressSpace()),
                              GlobalValue::InternalLinkage,
                              getInstrProfInitFuncName(), M);
   F->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);

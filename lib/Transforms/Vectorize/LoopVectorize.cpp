@@ -4935,6 +4935,7 @@ void InnerLoopVectorizer::vectorizeInstruction(Instruction &I) {
     setDebugLocFromInst(Builder, &I);
 
     Module *M = I.getParent()->getParent()->getParent();
+    const auto &DL = M->getDataLayout();
     auto *CI = cast<CallInst>(&I);
 
     StringRef FnName = CI->getCalledFunction()->getName();
@@ -4987,7 +4988,8 @@ void InnerLoopVectorizer::vectorizeInstruction(Instruction &I) {
         VectorF = M->getFunction(VFnName);
         if (!VectorF) {
           // Generate a declaration
-          FunctionType *FTy = FunctionType::get(RetTy, Tys, false);
+          FunctionType *FTy = FunctionType::get(RetTy, Tys, false,
+                                                DL.getProgramAddressSpace());
           VectorF =
               Function::Create(FTy, Function::ExternalLinkage, VFnName, M);
           VectorF->copyAttributesFrom(F);

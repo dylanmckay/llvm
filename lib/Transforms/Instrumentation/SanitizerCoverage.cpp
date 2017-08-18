@@ -368,7 +368,8 @@ bool SanitizerCoverageModule::runOnModule(Module &M) {
 
 
   // We insert an empty inline asm after cov callbacks to avoid callback merge.
-  EmptyAsm = InlineAsm::get(FunctionType::get(IRB.getVoidTy(), false),
+  EmptyAsm = InlineAsm::get(FunctionType::get(IRB.getVoidTy(), false,
+                                              DL->getProgramAddressSpace()),
                             StringRef(""), StringRef(""),
                             /*hasSideEffects=*/true);
 

@@ -29,7 +29,7 @@ protected:
   void SetUp() override {
     M.reset(new Module("MyModule", Ctx));
     FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx),
-                                          /*isVarArg=*/false);
+                                          /*isVarArg=*/false, /*AddrSpace=*/0);
     F = Function::Create(FTy, Function::ExternalLinkage, "", M.get());
     BB = BasicBlock::Create(Ctx, "", F);
     GV = new GlobalVariable(*M, Type::getFloatTy(Ctx), true,
@@ -229,7 +229,7 @@ TEST_F(IRBuilderTest, FastMathFlags) {
 
   // Test a call with FMF.
   auto CalleeTy = FunctionType::get(Type::getFloatTy(Ctx),
-                                    /*isVarArg=*/false);
+                                    /*isVarArg=*/false, /*AddrSpace=*/0);
   auto Callee =
       Function::Create(CalleeTy, Function::ExternalLinkage, "", M.get());
 
@@ -426,7 +426,7 @@ TEST_F(IRBuilderTest, CreateGlobalStringPtr) {
 
 TEST_F(IRBuilderTest, DebugLoc) {
   auto CalleeTy = FunctionType::get(Type::getVoidTy(Ctx),
-                                    /*isVarArg=*/false);
+                                    /*isVarArg=*/false, /*AddrSpace=*/0);
   auto Callee =
       Function::Create(CalleeTy, Function::ExternalLinkage, "", M.get());
 

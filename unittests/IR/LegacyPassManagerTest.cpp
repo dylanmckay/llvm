@@ -413,14 +413,16 @@ namespace llvm {
       FunctionType *FuncTy_0 = FunctionType::get(
           /*Result=*/IntegerType::get(Context, 32),
           /*Params=*/FuncTy_0_args,
-          /*isVarArg=*/false);
+          /*isVarArg=*/false,
+          /*AddrSpace=*/0);
 
       std::vector<Type*>FuncTy_2_args;
       FuncTy_2_args.push_back(IntegerType::get(Context, 1));
       FunctionType *FuncTy_2 = FunctionType::get(
           /*Result=*/Type::getVoidTy(Context),
           /*Params=*/FuncTy_2_args,
-          /*isVarArg=*/false);
+          /*isVarArg=*/false,
+          /*AddrSpace=*/0);
 
       // Function Declarations
 

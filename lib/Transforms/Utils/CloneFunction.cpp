@@ -240,7 +240,8 @@ Function *llvm::CloneFunction(Function *F, ValueToValueMapTy &VMap,
 
   // Create a new function type...
   FunctionType *FTy = FunctionType::get(F->getFunctionType()->getReturnType(),
-                                    ArgTypes, F->getFunctionType()->isVarArg());
+                                    ArgTypes, F->getFunctionType()->isVarArg(),
+                                    F->getFunctionType()->getAddressSpace());
 
   // Create the new function...
   Function *NewF =

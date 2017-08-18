@@ -183,7 +183,8 @@ doPromotion(Function *F, SmallPtrSetImpl<Argument *> &ArgsToPromote,
   Type *RetTy = FTy->getReturnType();
 
   // Construct the new function type using the new arguments.
-  FunctionType *NFTy = FunctionType::get(RetTy, Params, FTy->isVarArg());
+  FunctionType *NFTy = FunctionType::get(RetTy, Params, FTy->isVarArg(),
+                                         FTy->getAddressSpace());
 
   // Create the new function body and insert it into the module.
   Function *NF = Function::Create(NFTy, F->getLinkage(), F->getName());

@@ -2334,9 +2334,11 @@ bool LLParser::ParseArgumentList(SmallVectorImpl<ArgInfo> &ArgList,
 }
 
 /// ParseFunctionType
-///  ::= Type ArgumentList OptionalAttrs
+///  ::= Type ArgumentList OptionalAddrSpace OptionalAttrs
 bool LLParser::ParseFunctionType(Type *&Result) {
   assert(Lex.getKind() == lltok::lparen);
+
+  const DataLayout &DL = M->getDataLayout();
 
   if (!FunctionType::isValidReturnType(Result))
     return TokError("invalid function return type");
@@ -2344,6 +2346,10 @@ bool LLParser::ParseFunctionType(Type *&Result) {
   SmallVector<ArgInfo, 8> ArgList;
   bool isVarArg;
   if (ParseArgumentList(ArgList, isVarArg))
+    return true;
+
+  unsigned AddrSpace = DL.getProgramAddressSpace();
+  if (ParseOptionalAddrSpace(AddrSpace))
     return true;
 
   // Reject names on the arguments lists.
@@ -2359,7 +2365,7 @@ bool LLParser::ParseFunctionType(Type *&Result) {
   for (unsigned i = 0, e = ArgList.size(); i != e; ++i)
     ArgListTy.push_back(ArgList[i].Ty);
 
-  Result = FunctionType::get(Result, ArgListTy, isVarArg);
+  Result = FunctionType::get(Result, ArgListTy, isVarArg, AddrSpace);
   return false;
 }
 
@@ -4700,6 +4706,9 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
   bool HasLinkage;
   Type *RetType = nullptr;
   LocTy RetTypeLoc = Lex.getLoc();
+
+  const DataLayout &DL = M->getDataLayout();
+
   if (ParseOptionalLinkage(Linkage, HasLinkage, Visibility, DLLStorageClass) ||
       ParseOptionalCallingConv(CC) || ParseOptionalReturnAttrs(RetAttrs) ||
       ParseType(RetType, RetTypeLoc, true /*void allowed*/))
@@ -4765,6 +4774,7 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
   std::string GC;
   GlobalValue::UnnamedAddr UnnamedAddr = GlobalValue::UnnamedAddr::None;
   LocTy UnnamedAddrLoc;
+  unsigned AddrSpace = DL.getProgramAddressSpace();
   Constant *Prefix = nullptr;
   Constant *Prologue = nullptr;
   Constant *PersonalityFn = nullptr;
@@ -4772,6 +4782,7 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
 
   if (ParseArgumentList(ArgList, isVarArg) ||
       ParseOptionalUnnamedAddr(UnnamedAddr) ||
+      ParseOptionalAddrSpace(AddrSpace) ||
       ParseFnAttributeValuePairs(FuncAttrs, FwdRefAttrGrps, false,
                                  BuiltinLoc) ||
       (EatIfPresent(lltok::kw_section) &&
@@ -4815,7 +4826,7 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
     return Error(RetTypeLoc, "functions with 'sret' argument must return void");
 
   FunctionType *FT =
-    FunctionType::get(RetType, ParamTypeList, isVarArg);
+    FunctionType::get(RetType, ParamTypeList, isVarArg, AddrSpace);
   PointerType *PFT = PointerType::getUnqual(FT);
 
   Fn = nullptr;
@@ -5383,6 +5394,9 @@ bool LLParser::ParseInvoke(Instruction *&Inst, PerFunctionState &PFS) {
   SmallVector<OperandBundleDef, 2> BundleList;
 
   BasicBlock *NormalBB, *UnwindBB;
+
+  const DataLayout &DL = M->getDataLayout();
+
   if (ParseOptionalCallingConv(CC) || ParseOptionalReturnAttrs(RetAttrs) ||
       ParseType(RetType, RetTypeLoc, true /*void allowed*/) ||
       ParseValID(CalleeID) || ParseParameterList(ArgList, PFS) ||
@@ -5408,7 +5422,8 @@ bool LLParser::ParseInvoke(Instruction *&Inst, PerFunctionState &PFS) {
     if (!FunctionType::isValidReturnType(RetType))
       return Error(RetTypeLoc, "Invalid result type for LLVM function");
 
-    Ty = FunctionType::get(RetType, ParamTypes, false);
+    Ty = FunctionType::get(RetType, ParamTypes, false,
+                           DL.getProgramAddressSpace());
   }
 
   CalleeID.FTy = Ty;
@@ -5967,6 +5982,8 @@ bool LLParser::ParseCall(Instruction *&Inst, PerFunctionState &PFS,
   SmallVector<OperandBundleDef, 2> BundleList;
   LocTy CallLoc = Lex.getLoc();
 
+  const DataLayout &DL = M->getDataLayout();
+
   if (TCK != CallInst::TCK_None &&
       ParseToken(lltok::kw_call,
                  "expected 'tail call', 'musttail call', or 'notail call'"))
@@ -6000,7 +6017,8 @@ bool LLParser::ParseCall(Instruction *&Inst, PerFunctionState &PFS,
     if (!FunctionType::isValidReturnType(RetType))
       return Error(RetTypeLoc, "Invalid result type for LLVM function");
 
-    Ty = FunctionType::get(RetType, ParamTypes, false);
+    Ty = FunctionType::get(RetType, ParamTypes, false,
+                           DL.getProgramAddressSpace());
   }
 
   CalleeID.FTy = Ty;

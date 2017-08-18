@@ -26,6 +26,10 @@
 #include <cstdint>
 #include <iterator>
 
+// The width of the integer field that type subclasses can
+// use for arbitrary information.
+#define SUBCLASS_DATA_BITS 24
+
 namespace llvm {
 
 template<class GraphType> struct GraphTraits;
@@ -80,10 +84,10 @@ private:
   /// This refers to the LLVMContext in which this type was uniqued.
   LLVMContext &Context;
 
-  TypeID   ID : 8;            // The current base type of this type.
-  unsigned SubclassData : 24; // Space for subclasses to store data.
-                              // Note that this should be synchronized with
-                              // MAX_INT_BITS value in IntegerType class.
+  // The current base type of this type.
+  TypeID   ID : 8;
+  // Space for subclasses to store data.
+  unsigned SubclassData : SUBCLASS_DATA_BITS;
 
 protected:
   friend class LLVMContextImpl;

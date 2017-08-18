@@ -4419,7 +4419,8 @@ InstCombiner::transformCallThroughTrampoline(CallSite CS,
       // Replace the trampoline call with a direct call.  Let the generic
       // code sort out any function type mismatches.
       FunctionType *NewFTy = FunctionType::get(FTy->getReturnType(), NewTypes,
-                                                FTy->isVarArg());
+                                                FTy->isVarArg(),
+                                                FTy->getAddressSpace());
       Constant *NewCallee =
         NestF->getType() == PointerType::getUnqual(NewFTy) ?
         NestF : ConstantExpr::getBitCast(NestF,

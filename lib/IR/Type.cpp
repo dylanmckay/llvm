@@ -275,11 +275,13 @@ APInt IntegerType::getMask() const {
 //===----------------------------------------------------------------------===//
 
 FunctionType::FunctionType(Type *Result, ArrayRef<Type*> Params,
-                           bool IsVarArgs)
+                           bool IsVarArgs, unsigned AddrSpace)
   : Type(Result->getContext(), FunctionTyID) {
   Type **SubTys = reinterpret_cast<Type**>(this+1);
   assert(isValidReturnType(Result) && "invalid return type for function");
-  setSubclassData(IsVarArgs);
+
+  unsigned SubclassData = (IsVarArgs & 1) | (AddrSpace << 1);
+  setSubclassData(SubclassData);
 
   SubTys[0] = Result;
 
@@ -295,7 +297,7 @@ FunctionType::FunctionType(Type *Result, ArrayRef<Type*> Params,
 
 // This is the factory function for the FunctionType class.
 FunctionType *FunctionType::get(Type *ReturnType,
-                                ArrayRef<Type*> Params, bool isVarArg) {
+                                ArrayRef<Type*> Params, bool isVarArg, unsigned AddrSpace) {
   LLVMContextImpl *pImpl = ReturnType->getContext().pImpl;
   FunctionTypeKeyInfo::KeyTy Key(ReturnType, Params, isVarArg);
   auto I = pImpl->FunctionTypes.find_as(Key);
@@ -305,7 +307,7 @@ FunctionType *FunctionType::get(Type *ReturnType,
     FT = (FunctionType *)pImpl->TypeAllocator.Allocate(
         sizeof(FunctionType) + sizeof(Type *) * (Params.size() + 1),
         alignof(FunctionType));
-    new (FT) FunctionType(ReturnType, Params, isVarArg);
+    new (FT) FunctionType(ReturnType, Params, isVarArg, AddrSpace);
     pImpl->FunctionTypes.insert(FT);
   } else {
     FT = *I;
@@ -314,8 +316,8 @@ FunctionType *FunctionType::get(Type *ReturnType,
   return FT;
 }
 
-FunctionType *FunctionType::get(Type *Result, bool isVarArg) {
-  return get(Result, None, isVarArg);
+FunctionType *FunctionType::get(Type *Result, bool isVarArg, unsigned AddrSpace) {
+  return get(Result, None, isVarArg, AddrSpace);
 }
 
 bool FunctionType::isValidReturnType(Type *RetTy) {

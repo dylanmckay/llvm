@@ -142,8 +142,8 @@ enum TypeCodes {
   TYPE_CODE_INTEGER = 7, // INTEGER: [width]
   TYPE_CODE_POINTER = 8, // POINTER: [pointee type]
 
-  TYPE_CODE_FUNCTION_OLD = 9, // FUNCTION: [vararg, attrid, retty,
-                              //            paramty x N]
+  TYPE_CODE_FUNCTION_VERY_OLD = 9, // FUNCTION: [vararg, attrid, retty,
+                                   //            paramty x N]
 
   TYPE_CODE_HALF = 10, // HALF
 
@@ -165,9 +165,10 @@ enum TypeCodes {
   TYPE_CODE_STRUCT_NAME = 19,  // STRUCT_NAME: [strchr x N]
   TYPE_CODE_STRUCT_NAMED = 20, // STRUCT_NAMED: [ispacked, eltty x N]
 
-  TYPE_CODE_FUNCTION = 21, // FUNCTION: [vararg, retty, paramty x N]
+  TYPE_CODE_FUNCTION_OLD = 21, // FUNCTION: [vararg, retty, paramty x N]
 
-  TYPE_CODE_TOKEN = 22 // TOKEN
+  TYPE_CODE_TOKEN = 22, // TOKEN
+  TYPE_CODE_FUNCTION = 23 // FUNCTION: [vararg, addrspace, retty, paramty x N]
 };
 
 enum OperandBundleTagCode {

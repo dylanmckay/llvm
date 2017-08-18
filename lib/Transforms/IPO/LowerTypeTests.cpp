@@ -247,6 +247,7 @@ public:
 
 class LowerTypeTestsModule {
   Module &M;
+  const DataLayout &DL;
 
   ModuleSummaryIndex *ExportSummary;
   const ModuleSummaryIndex *ImportSummary;
@@ -1023,7 +1024,7 @@ void LowerTypeTestsModule::moveInitializerToModuleConstructor(
   if (WeakInitializerFn == nullptr) {
     WeakInitializerFn = Function::Create(
         FunctionType::get(Type::getVoidTy(M.getContext()),
-                          /* IsVarArg */ false),
+                          /* IsVarArg */ false, DL.getProgramAddressSpace()),
         GlobalValue::InternalLinkage, "__cfi_global_var_init", &M);
     BasicBlock *BB =
         BasicBlock::Create(M.getContext(), "entry", WeakInitializerFn);
@@ -1116,7 +1117,8 @@ void LowerTypeTestsModule::createJumpTable(
   for (const auto &Arg : AsmArgs)
     ArgTypes.push_back(Arg->getType());
   InlineAsm *JumpTableAsm =
-      InlineAsm::get(FunctionType::get(IRB.getVoidTy(), ArgTypes, false),
+      InlineAsm::get(FunctionType::get(IRB.getVoidTy(), ArgTypes, false,
+                                       DL.getProgramAddressSpace()),
                      AsmOS.str(), ConstraintOS.str(),
                      /*hasSideEffects=*/true);
 
@@ -1214,7 +1216,8 @@ void LowerTypeTestsModule::buildBitSetsFromFunctionsNative(
 
   Function *JumpTableFn =
       Function::Create(FunctionType::get(Type::getVoidTy(M.getContext()),
-                                         /* IsVarArg */ false),
+                                         /* IsVarArg */ false,
+                                         DL.getProgramAddressSpace()),
                        GlobalValue::PrivateLinkage, ".cfi.jumptable", &M);
   ArrayType *JumpTableType =
       ArrayType::get(getJumpTableEntryType(), Functions.size());
@@ -1377,7 +1380,8 @@ void LowerTypeTestsModule::buildBitSetsFromDisjointSet(
 LowerTypeTestsModule::LowerTypeTestsModule(
     Module &M, ModuleSummaryIndex *ExportSummary,
     const ModuleSummaryIndex *ImportSummary)
-    : M(M), ExportSummary(ExportSummary), ImportSummary(ImportSummary) {
+    : M(M), DL(M.getDataLayout()), ExportSummary(ExportSummary),
+      ImportSummary(ImportSummary) {
   assert(!(ExportSummary && ImportSummary));
   Triple TargetTriple(M.getTargetTriple());
   Arch = TargetTriple.getArch();
@@ -1513,7 +1517,8 @@ bool LowerTypeTestsModule::lower() {
         Function *F = M.getFunction(FunctionName);
         if (!F)
           F = Function::Create(
-              FunctionType::get(Type::getVoidTy(M.getContext()), false),
+              FunctionType::get(Type::getVoidTy(M.getContext()), false,
+                                DL.getProgramAddressSpace()),
               GlobalVariable::ExternalLinkage, FunctionName, &M);
 
         // If the function is available_externally, remove its definition so

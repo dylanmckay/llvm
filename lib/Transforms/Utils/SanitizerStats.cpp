@@ -75,6 +75,8 @@ void SanitizerStatReport::finish() {
     return;
   }
 
+  const DataLayout &DL = M->getDataLayout();
+
   PointerType *Int8PtrTy = Type::getInt8PtrTy(M->getContext());
   IntegerType *Int32Ty = Type::getInt32Ty(M->getContext());
   Type *VoidTy = Type::getVoidTy(M->getContext());
@@ -92,7 +94,8 @@ void SanitizerStatReport::finish() {
   ModuleStatsGV->eraseFromParent();
 
   // Create a global constructor to register NewModuleStatsGV.
-  auto F = Function::Create(FunctionType::get(VoidTy, false),
+  auto F = Function::Create(FunctionType::get(VoidTy, false,
+                            DL.getProgramAddressSpace()),
                             GlobalValue::InternalLinkage, "", M);
   auto BB = BasicBlock::Create(M->getContext(), "", F);
   IRBuilder<> B(BB);

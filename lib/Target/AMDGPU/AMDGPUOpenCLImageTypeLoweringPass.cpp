@@ -303,7 +303,8 @@ class AMDGPUOpenCLImageTypeLoweringPass : public ModulePass {
     }
 
     // Create function with new signature and clone the old body into it.
-    auto NewFT = FunctionType::get(FT->getReturnType(), ArgTypes, false);
+    auto NewFT = FunctionType::get(FT->getReturnType(), ArgTypes, false,
+                                   FT->getAddressSpace());
     auto NewF = Function::Create(NewFT, F->getLinkage(), F->getName());
     ValueToValueMapTy VMap;
     auto NewFArgIt = NewF->arg_begin();

@@ -626,6 +626,8 @@ InsertSafepointPoll(Instruction *InsertBefore,
   Module *M = InsertBefore->getModule();
   assert(M && "must be part of a module");
 
+  const auto &DL = M->getDataLayout();
+
   // Inline the safepoint poll implementation - this will get all the branch,
   // control flow, etc..  Most importantly, it will introduce the actual slow
   // path call - where we need to insert a safepoint (parsepoint).
@@ -633,7 +635,8 @@ InsertSafepointPoll(Instruction *InsertBefore,
   auto *F = M->getFunction(GCSafepointPollName);
   assert(F && "gc.safepoint_poll function is missing");
   assert(F->getValueType() ==
-         FunctionType::get(Type::getVoidTy(M->getContext()), false) &&
+         FunctionType::get(Type::getVoidTy(M->getContext()), false,
+                           DL.getProgramAddressSpace()) &&
          "gc.safepoint_poll declared with wrong type");
   assert(!F->empty() && "gc.safepoint_poll must be a non-empty function");
   CallInst *PollCall = CallInst::Create(F, "", InsertBefore);

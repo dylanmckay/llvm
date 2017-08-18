@@ -940,13 +940,15 @@ FunctionType *Intrinsic::getType(LLVMContext &Context,
   while (!TableRef.empty())
     ArgTys.push_back(DecodeFixedType(TableRef, Tys, Context));
 
+  unsigned AddrSpace = 0; // FIXME: we should grab the progmem space from DL
+
   // DecodeFixedType returns Void for IITDescriptor::Void and IITDescriptor::VarArg
   // If we see void type as the type of the last argument, it is vararg intrinsic
   if (!ArgTys.empty() && ArgTys.back()->isVoidTy()) {
     ArgTys.pop_back();
-    return FunctionType::get(ResultTy, ArgTys, true);
+    return FunctionType::get(ResultTy, ArgTys, true, AddrSpace);
   }
-  return FunctionType::get(ResultTy, ArgTys, false);
+  return FunctionType::get(ResultTy, ArgTys, false, AddrSpace);
 }
 
 bool Intrinsic::isOverloaded(ID id) {

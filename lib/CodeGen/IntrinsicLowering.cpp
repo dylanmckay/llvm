@@ -28,11 +28,13 @@ template <class ArgIt>
 static void EnsureFunctionExists(Module &M, const char *Name,
                                  ArgIt ArgBegin, ArgIt ArgEnd,
                                  Type *RetTy) {
+  const auto &DL = M.getDataLayout();
   // Insert a correctly-typed definition now.
   std::vector<Type *> ParamTys;
   for (ArgIt I = ArgBegin; I != ArgEnd; ++I)
     ParamTys.push_back(I->getType());
-  M.getOrInsertFunction(Name, FunctionType::get(RetTy, ParamTys, false));
+  M.getOrInsertFunction(Name, FunctionType::get(RetTy, ParamTys, false,
+                                                DL.getProgramAddressSpace()));
 }
 
 static void EnsureFPIntrinsicsExist(Module &M, Function &Fn,
@@ -68,12 +70,14 @@ static CallInst *ReplaceCallWith(const char *NewFn, CallInst *CI,
   // If we haven't already looked up this function, check to see if the
   // program already contains a function with this name.
   Module *M = CI->getModule();
+  const auto &DL = M->getDataLayout();
   // Get or insert the definition now.
   std::vector<Type *> ParamTys;
   for (ArgIt I = ArgBegin; I != ArgEnd; ++I)
     ParamTys.push_back((*I)->getType());
   Constant* FCache = M->getOrInsertFunction(NewFn,
-                                  FunctionType::get(RetTy, ParamTys, false));
+                              FunctionType::get(RetTy, ParamTys, false,
+                                                DL.getProgramAddressSpace()));
 
   IRBuilder<> Builder(CI->getParent(), CI->getIterator());
   SmallVector<Value *, 8> Args(ArgBegin, ArgEnd);

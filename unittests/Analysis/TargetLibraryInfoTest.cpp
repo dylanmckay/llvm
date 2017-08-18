@@ -63,7 +63,8 @@ TEST_F(TargetLibraryInfoTest, InvalidProto) {
   parseAssembly("%foo = type { %foo }\n");
 
   auto *StructTy = M->getTypeByName("foo");
-  auto *InvalidFTy = FunctionType::get(StructTy, /*isVarArg=*/false);
+  auto *InvalidFTy = FunctionType::get(StructTy, /*isVarArg=*/false,
+                                       /*AddrSpace=*/0);
 
   for (unsigned FI = 0; FI != LibFunc::NumLibFuncs; ++FI) {
     LibFunc LF = (LibFunc)FI;

@@ -22,8 +22,10 @@ using namespace llvm;
 
 static void appendToGlobalArray(const char *Array, Module &M, Function *F,
                                 int Priority, Constant *Data) {
+  const DataLayout &DL = M.getDataLayout();
   IRBuilder<> IRB(M.getContext());
-  FunctionType *FnTy = FunctionType::get(IRB.getVoidTy(), false);
+  FunctionType *FnTy = FunctionType::get(IRB.getVoidTy(), false,
+                                         DL.getProgramAddressSpace());
 
   // Get the current set of static global constructors and add the new ctor
   // to the list.
@@ -141,9 +143,11 @@ Function *llvm::checkSanitizerInterfaceFunction(Constant *FuncOrBitcast) {
 Function *llvm::declareSanitizerInitFunction(Module &M, StringRef InitName,
                                              ArrayRef<Type *> InitArgTypes) {
   assert(!InitName.empty() && "Expected init function name");
+  const DataLayout &DL = M.getDataLayout();
   Function *F = checkSanitizerInterfaceFunction(M.getOrInsertFunction(
       InitName,
-      FunctionType::get(Type::getVoidTy(M.getContext()), InitArgTypes, false),
+      FunctionType::get(Type::getVoidTy(M.getContext()), InitArgTypes, false,
+                        DL.getProgramAddressSpace()),
       AttributeList()));
   F->setLinkage(Function::ExternalLinkage);
   return F;
@@ -153,13 +157,15 @@ std::pair<Function *, Function *> llvm::createSanitizerCtorAndInitFunctions(
     Module &M, StringRef CtorName, StringRef InitName,
     ArrayRef<Type *> InitArgTypes, ArrayRef<Value *> InitArgs,
     StringRef VersionCheckName) {
+  const DataLayout &DL = M.getDataLayout();
   assert(!InitName.empty() && "Expected init function name");
   assert(InitArgs.size() == InitArgTypes.size() &&
          "Sanitizer's init function expects different number of arguments");
   Function *InitFunction =
       declareSanitizerInitFunction(M, InitName, InitArgTypes);
   Function *Ctor = Function::Create(
-      FunctionType::get(Type::getVoidTy(M.getContext()), false),
+      FunctionType::get(Type::getVoidTy(M.getContext()), false,
+                        DL.getProgramAddressSpace()),
       GlobalValue::InternalLinkage, CtorName, &M);
   BasicBlock *CtorBB = BasicBlock::Create(M.getContext(), "", Ctor);
   IRBuilder<> IRB(ReturnInst::Create(M.getContext(), CtorBB));

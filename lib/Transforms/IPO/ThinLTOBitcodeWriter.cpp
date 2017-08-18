@@ -132,7 +132,8 @@ void promoteTypeIds(Module &M, StringRef ModuleId) {
 // FIXME: If we made functions typeless then there would be no need to do this.
 void simplifyExternals(Module &M) {
   FunctionType *EmptyFT =
-      FunctionType::get(Type::getVoidTy(M.getContext()), false);
+      FunctionType::get(Type::getVoidTy(M.getContext()), false,
+                        M.getDataLayout().getProgramAddressSpace());
 
   for (auto I = M.begin(), E = M.end(); I != E;) {
     Function &F = *I++;

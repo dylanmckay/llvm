@@ -149,6 +149,9 @@ public:
   /// arguments.
   bool isVarArg() const { return getFunctionType()->isVarArg(); }
 
+  /// Gets the address space that the function resides in.
+  unsigned getAddressSpace() const { return getFunctionType()->getAddressSpace(); }
+
   bool isMaterializable() const {
     return getGlobalObjectSubClassData() & (1 << IsMaterializableBit);
   }

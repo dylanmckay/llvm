@@ -802,9 +802,10 @@ void ModuleBitcodeWriter::writeTypeTable() {
     }
     case Type::FunctionTyID: {
       FunctionType *FT = cast<FunctionType>(T);
-      // FUNCTION: [isvararg, retty, paramty x N]
+      // FUNCTION: [isvararg, addrspace, retty, paramty x N]
       Code = bitc::TYPE_CODE_FUNCTION;
       TypeVals.push_back(FT->isVarArg());
+      TypeVals.push_back(FT->getAddressSpace());
       TypeVals.push_back(VE.getTypeID(FT->getReturnType()));
       for (unsigned i = 0, e = FT->getNumParams(); i != e; ++i)
         TypeVals.push_back(VE.getTypeID(FT->getParamType(i)));

@@ -21,10 +21,13 @@ using namespace llvm;
 
 static Constant *getDefaultPersonalityFn(Module *M) {
   LLVMContext &C = M->getContext();
+  const DataLayout &DL = M->getDataLayout();
   Triple T(M->getTargetTriple());
   EHPersonality Pers = getDefaultEHPersonality(T);
+
   return M->getOrInsertFunction(getEHPersonalityName(Pers),
-                                FunctionType::get(Type::getInt32Ty(C), true));
+                                FunctionType::get(Type::getInt32Ty(C), true,
+                                                  DL.getProgramAddressSpace()));
 }
 
 IRBuilder<> *EscapeEnumerator::Next() {

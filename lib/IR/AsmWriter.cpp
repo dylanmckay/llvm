@@ -2747,6 +2747,9 @@ void AssemblyWriter::printFunction(const Function *F) {
   StringRef UA = getUnnamedAddrEncoding(F->getUnnamedAddr());
   if (!UA.empty())
     Out << ' ' << UA;
+  unsigned AddrSpace = FT->getAddressSpace();
+  if (AddrSpace != 0)
+    Out << " addrspace(" << AddrSpace << ")";
   if (Attrs.hasAttributes(AttributeList::FunctionIndex))
     Out << " #" << Machine.getAttributeGroupSlot(Attrs.getFnAttributes());
   if (F->hasSection()) {

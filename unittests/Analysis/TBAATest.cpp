@@ -33,7 +33,7 @@ protected:
 
 static StoreInst *getFunctionWithSingleStore(Module *M, StringRef Name) {
   auto &C = M->getContext();
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), {});
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), {}, 0);
   auto *F = cast<Function>(M->getOrInsertFunction(Name, FTy));
   auto *BB = BasicBlock::Create(C, "entry", F);
   auto *IntType = Type::getInt32Ty(C);

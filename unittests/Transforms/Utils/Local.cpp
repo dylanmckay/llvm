@@ -64,7 +64,7 @@ TEST(Local, RemoveDuplicatePHINodes) {
   IRBuilder<> B(C);
 
   std::unique_ptr<Function> F(
-      Function::Create(FunctionType::get(B.getVoidTy(), false),
+      Function::Create(FunctionType::get(B.getVoidTy(), false, 0),
                        GlobalValue::ExternalLinkage, "F"));
   BasicBlock *Entry(BasicBlock::Create(C, "", F.get()));
   BasicBlock *BB(BasicBlock::Create(C, "", F.get()));

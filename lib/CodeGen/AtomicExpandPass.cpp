@@ -1592,7 +1592,8 @@ bool AtomicExpand::expandAtomicOpToLibcall(
   SmallVector<Type *, 6> ArgTys;
   for (Value *Arg : Args)
     ArgTys.push_back(Arg->getType());
-  FunctionType *FnType = FunctionType::get(ResultTy, ArgTys, false);
+  FunctionType *FnType = FunctionType::get(ResultTy, ArgTys, false,
+                                           DL.getProgramAddressSpace());
   Constant *LibcallFn =
       M->getOrInsertFunction(TLI->getLibcallName(RTLibType), FnType, Attr);
   CallInst *Call = Builder.CreateCall(LibcallFn, Args);

@@ -860,7 +860,7 @@ FunctionType* AMDGPULibFunc::getFunctionType(Module& M) const {
 
   return FunctionType::get(
     getIntrinsicParamType(C, getRetType(FuncId, Leads), true),
-    Args, false);
+    Args, false, M.getDataLayout().getProgramAddressSpace());
 }
 
 unsigned AMDGPULibFunc::getNumArgs() const {

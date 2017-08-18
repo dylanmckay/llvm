@@ -1140,7 +1140,7 @@ operand fields are
 * *address space*: If supplied, the target-specific numbered address space where
   the pointed-to object resides. Otherwise, the default address space is zero.
 
-TYPE_CODE_FUNCTION_OLD Record
+TYPE_CODE_FUNCTION_VERY_OLD Record
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
@@ -1148,9 +1148,9 @@ TYPE_CODE_FUNCTION_OLD Record
   earlier. It is guaranteed to be understood by the current LLVM version, as
   specified in the :ref:`IR backwards compatibility` policy.
 
-``[FUNCTION_OLD, vararg, ignored, retty, ...paramty... ]``
+``[FUNCTION_VERY_OLD, vararg, ignored, retty, ...paramty... ]``
 
-The ``FUNCTION_OLD`` record (code 9) adds a function type to the type table.
+The ``FUNCTION_VERY_OLD`` record (code 9) adds a function type to the type table.
 The operand fields are
 
 * *vararg*: Non-zero if the type represents a varargs function
@@ -1162,6 +1162,8 @@ The operand fields are
 
 * *paramty*: Zero or more type indices representing the parameter types of the
   function
+
+FIXME: Add docs for new record type
 
 TYPE_CODE_ARRAY Record
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1261,12 +1263,14 @@ record. The operand fields are
 * *eltty*: Zero or more type indices representing the element types of the
   structure
 
-TYPE_CODE_FUNCTION Record
+TYPE_CODE_FUNCTION_OLD Record
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``[FUNCTION, vararg, retty, ...paramty... ]``
+``[FUNCTION_OLD, vararg, retty, ...paramty... ]``
 
-The ``FUNCTION`` record (code 21) adds a function type to the type table. The
+FIXME: add a note about legacy
+
+The ``FUNCTION_OLD`` record (code 21) adds a function type to the type table. The
 operand fields are
 
 * *vararg*: Non-zero if the type represents a varargs function

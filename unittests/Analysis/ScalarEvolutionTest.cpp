@@ -63,7 +63,7 @@ protected:
 
 TEST_F(ScalarEvolutionsTest, SCEVUnknownRAUW) {
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
-                                              std::vector<Type *>(), false);
+                                              std::vector<Type *>(), false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
   BasicBlock *BB = BasicBlock::Create(Context, "entry", F);
   ReturnInst::Create(Context, nullptr, BB);
@@ -114,7 +114,8 @@ TEST_F(ScalarEvolutionsTest, SCEVMultiplyAddRecs) {
   Type *Ty = Type::getInt32Ty(Context);
   SmallVector<Type *, 10> Types;
   Types.append(10, Ty);
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context), Types, false);
+  FunctionType *FTy =
+          FunctionType::get(Type::getVoidTy(Context), Types, false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
   BasicBlock *BB = BasicBlock::Create(Context, "entry", F);
   ReturnInst::Create(Context, nullptr, BB);
@@ -253,7 +254,7 @@ TEST_F(ScalarEvolutionsTest, SCEVMultiplyAddRecs) {
 
 TEST_F(ScalarEvolutionsTest, SimplifiedPHI) {
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
-                                              std::vector<Type *>(), false);
+                                        std::vector<Type *>(), false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", F);
   BasicBlock *LoopBB = BasicBlock::Create(Context, "loop", F);
@@ -286,8 +287,8 @@ TEST_F(ScalarEvolutionsTest, ExpandPtrTypeSCEV) {
   auto *I8PtrTy = Type::getInt8PtrTy(Context);
   auto *I32Ty = Type::getInt32Ty(Context);
   auto *I32PtrTy = Type::getInt32PtrTy(Context);
-  FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), std::vector<Type *>(), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
+                                        std::vector<Type *>(), false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", F);
   BasicBlock *LoopBB = BasicBlock::Create(Context, "loop", F);
@@ -469,8 +470,8 @@ TEST_F(ScalarEvolutionsTest, CommutativeExprOperandOrder) {
 }
 
 TEST_F(ScalarEvolutionsTest, CompareSCEVComplexity) {
-  FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), std::vector<Type *>(), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
+                                        std::vector<Type *>(), false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", F);
   BasicBlock *LoopBB = BasicBlock::Create(Context, "bb1", F);
@@ -539,8 +540,8 @@ TEST_F(ScalarEvolutionsTest, CompareValueComplexity) {
   IntegerType *IntPtrTy = M.getDataLayout().getIntPtrType(Context);
   PointerType *IntPtrPtrTy = IntPtrTy->getPointerTo();
 
-  FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), {IntPtrTy, IntPtrTy}, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
+                                        {IntPtrTy, IntPtrTy}, false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", F);
 
@@ -576,7 +577,7 @@ TEST_F(ScalarEvolutionsTest, SCEVAddExpr) {
   Type *ArgTys[] = {Type::getInt64Ty(Context), Ty32};
 
   FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), ArgTys, false);
+      FunctionType::get(Type::getVoidTy(Context), ArgTys, false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("f", FTy));
 
   Argument *A1 = &*F->arg_begin();
@@ -810,7 +811,7 @@ TEST_F(ScalarEvolutionsTest, SCEVZeroExtendExpr) {
   //   %gep95 = getelementptr i8, i8* %gep91, i64 %dec94
   //   ret void
   // }
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context), {}, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context), {}, false, 0);
   Function *F = cast<Function>(M.getOrInsertFunction("foo", FTy));
 
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", F);
@@ -889,7 +890,7 @@ TEST_F(ScalarEvolutionsTest, SCEVZeroExtendExprNonIntegral) {
   Type *T_pint64 = T_int64->getPointerTo(10);
 
   FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), {T_pint64}, false);
+      FunctionType::get(Type::getVoidTy(Context), {T_pint64}, false, 0);
   Function *F = cast<Function>(NIM.getOrInsertFunction("foo", FTy));
 
   Argument *Arg = &*F->arg_begin();
@@ -962,7 +963,7 @@ TEST_F(ScalarEvolutionsTest, SCEVExitLimitForgetLoop) {
   Type *T_pint64 = T_int64->getPointerTo(10);
 
   FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), {T_pint64}, false);
+      FunctionType::get(Type::getVoidTy(Context), {T_pint64}, false, 0);
   Function *F = cast<Function>(NIM.getOrInsertFunction("foo", FTy));
 
   BasicBlock *Top = BasicBlock::Create(Context, "top", F);
@@ -1044,7 +1045,7 @@ TEST_F(ScalarEvolutionsTest, SCEVExitLimitForgetValue) {
   Type *T_pint64 = T_int64->getPointerTo(10);
 
   FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), {T_pint64}, false);
+      FunctionType::get(Type::getVoidTy(Context), {T_pint64}, false, 0);
   Function *F = cast<Function>(NIM.getOrInsertFunction("foo", FTy));
 
   Argument *Arg = &*F->arg_begin();

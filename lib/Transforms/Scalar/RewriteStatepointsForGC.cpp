@@ -1320,6 +1320,7 @@ makeStatepointExplicitImpl(const CallSite CS, /* to replace */
   // arguments will be available here.  We can't insert afterwards since we may
   // be replacing a terminator.
   Instruction *InsertBefore = CS.getInstruction();
+  const auto &DL = InsertBefore->getModule()->getDataLayout();
   IRBuilder<> Builder(InsertBefore);
 
   ArrayRef<Value *> GCArgs(LiveVariables);
@@ -1367,7 +1368,8 @@ makeStatepointExplicitImpl(const CallSite CS, /* to replace */
       for (Value *Arg : CallArgs)
         DomainTy.push_back(Arg->getType());
       auto *FTy = FunctionType::get(Type::getVoidTy(F->getContext()), DomainTy,
-                                    /* isVarArg = */ false);
+                                    /* isVarArg = */ false,
+                                    DL.getProgramAddressSpace());
 
       // Note: CallTarget can be a bitcast instruction of a symbol if there are
       // calls to @llvm.experimental.deoptimize with different argument types in
@@ -1794,9 +1796,11 @@ static void insertUseHolderAfter(CallSite &CS, const ArrayRef<Value *> Values,
     return;
 
   Module *M = CS.getInstruction()->getModule();
+  const auto &DL = M->getDataLayout();
   // Use a dummy vararg function to actually hold the values live
   Function *Func = cast<Function>(M->getOrInsertFunction(
-      "__tmp_use", FunctionType::get(Type::getVoidTy(M->getContext()), true)));
+      "__tmp_use", FunctionType::get(Type::getVoidTy(M->getContext()), true,
+                                     DL.getProgramAddressSpace())));
   if (CS.isCall()) {
     // For call safepoints insert dummy calls right after safepoint
     Holders.push_back(CallInst::Create(Func, Values, "",

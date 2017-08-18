@@ -126,11 +126,13 @@ private:
       return Decl;
 
     LLVMContext &C = TheModule->getContext();
+    const auto &DL = TheModule->getDataLayout();
     Type *Params[] = { PointerType::getUnqual(Type::getInt8Ty(C)) };
     AttributeList Attr = AttributeList().addAttribute(
         C, AttributeList::FunctionIndex, Attribute::NoUnwind);
     FunctionType *Fty = FunctionType::get(Type::getVoidTy(C), Params,
-                                          /*isVarArg=*/false);
+                                          /*isVarArg=*/false,
+                                          DL.getProgramAddressSpace());
     return Decl = TheModule->getOrInsertFunction(Name, Fty, Attr);
   }
 
@@ -140,9 +142,11 @@ private:
       return Decl;
 
     LLVMContext &C = TheModule->getContext();
+    const auto &DL = TheModule->getDataLayout();
     Type *I8X = PointerType::getUnqual(Type::getInt8Ty(C));
     Type *Params[] = { I8X };
-    FunctionType *Fty = FunctionType::get(I8X, Params, /*isVarArg=*/false);
+    FunctionType *Fty = FunctionType::get(I8X, Params, /*isVarArg=*/false,
+                                          DL.getProgramAddressSpace());
     AttributeList Attr = AttributeList();
 
     if (NoUnwind)
@@ -157,6 +161,7 @@ private:
       return Decl;
 
     LLVMContext &C = TheModule->getContext();
+    const auto &DL = TheModule->getDataLayout();
     Type *I8X = PointerType::getUnqual(Type::getInt8Ty(C));
     Type *I8XX = PointerType::getUnqual(I8X);
     Type *Params[] = { I8XX, I8X };
@@ -166,7 +171,8 @@ private:
     Attr = Attr.addParamAttribute(C, 0, Attribute::NoCapture);
 
     FunctionType *Fty = FunctionType::get(Type::getVoidTy(C), Params,
-                                          /*isVarArg=*/false);
+                                          /*isVarArg=*/false,
+                                          DL.getProgramAddressSpace());
 
     return Decl = TheModule->getOrInsertFunction(Name, Fty, Attr);
   }

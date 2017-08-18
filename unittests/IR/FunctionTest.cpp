@@ -18,7 +18,7 @@ TEST(FunctionTest, hasLazyArguments) {
   LLVMContext C;
 
   Type *ArgTypes[] = {Type::getInt8Ty(C), Type::getInt32Ty(C)};
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), ArgTypes, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), ArgTypes, false, 0);
 
   // Functions start out with lazy arguments.
   std::unique_ptr<Function> F(
@@ -40,7 +40,7 @@ TEST(FunctionTest, stealArgumentListFrom) {
   LLVMContext C;
 
   Type *ArgTypes[] = {Type::getInt8Ty(C), Type::getInt32Ty(C)};
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), ArgTypes, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), ArgTypes, false, 0);
   std::unique_ptr<Function> F1(
       Function::Create(FTy, GlobalValue::ExternalLinkage, "F1"));
   std::unique_ptr<Function> F2(
@@ -116,7 +116,7 @@ TEST(FunctionTest, setSection) {
   Module M("test", C);
 
   llvm::Function *F =
-      Function::Create(llvm::FunctionType::get(llvm::Type::getVoidTy(C), false),
+      Function::Create(llvm::FunctionType::get(llvm::Type::getVoidTy(C), false, 0),
                        llvm::GlobalValue::ExternalLinkage, "F", &M);
 
   F->setSection(".text.test");
@@ -128,6 +128,20 @@ TEST(FunctionTest, setSection) {
   F->setSection(".text.test2");
   EXPECT_TRUE(F->getSection() == ".text.test2");
   EXPECT_TRUE(F->hasSection());
+}
+
+// Test setting and retrieving fields stored in subclass data bitfield
+// through the associated FunctionType
+TEST(FunctionTest, subclassData) {
+  LLVMContext C;
+  Module M("test", C);
+
+  llvm::Function *F =
+      Function::Create(llvm::FunctionType::get(llvm::Type::getVoidTy(C), true,
+                       180), GlobalValue::ExternalLinkage);
+
+  EXPECT_EQ(false, F->isVarArg());
+  EXPECT_EQ(180u, F->getAddressSpace());
 }
 
 } // end namespace

@@ -389,7 +389,8 @@ FunctionType *DataFlowSanitizer::getArgsFunctionType(FunctionType *T) {
   Type *RetType = T->getReturnType();
   if (!RetType->isVoidTy())
     RetType = StructType::get(RetType, ShadowTy);
-  return FunctionType::get(RetType, ArgTypes, T->isVarArg());
+  return FunctionType::get(RetType, ArgTypes, T->isVarArg(),
+                           T->getAddressSpace());
 }
 
 FunctionType *DataFlowSanitizer::getTrampolineFunctionType(FunctionType *T) {
@@ -401,7 +402,8 @@ FunctionType *DataFlowSanitizer::getTrampolineFunctionType(FunctionType *T) {
   Type *RetType = T->getReturnType();
   if (!RetType->isVoidTy())
     ArgTypes.push_back(ShadowPtrTy);
-  return FunctionType::get(T->getReturnType(), ArgTypes, false);
+  return FunctionType::get(T->getReturnType(), ArgTypes, false,
+                           T->getAddressSpace());
 }
 
 FunctionType *DataFlowSanitizer::getCustomFunctionType(FunctionType *T) {
@@ -424,7 +426,8 @@ FunctionType *DataFlowSanitizer::getCustomFunctionType(FunctionType *T) {
   Type *RetType = T->getReturnType();
   if (!RetType->isVoidTy())
     ArgTypes.push_back(ShadowPtrTy);
-  return FunctionType::get(T->getReturnType(), ArgTypes, T->isVarArg());
+  return FunctionType::get(T->getReturnType(), ArgTypes, T->isVarArg(),
+                           T->getAddressSpace());
 }
 
 bool DataFlowSanitizer::doInitialization(Module &M) {
@@ -456,19 +459,25 @@ bool DataFlowSanitizer::doInitialization(Module &M) {
 
   Type *DFSanUnionArgs[2] = { ShadowTy, ShadowTy };
   DFSanUnionFnTy =
-      FunctionType::get(ShadowTy, DFSanUnionArgs, /*isVarArg=*/ false);
+      FunctionType::get(ShadowTy, DFSanUnionArgs, /*isVarArg=*/ false,
+                        DL.getProgramAddressSpace());
   Type *DFSanUnionLoadArgs[2] = { ShadowPtrTy, IntptrTy };
   DFSanUnionLoadFnTy =
-      FunctionType::get(ShadowTy, DFSanUnionLoadArgs, /*isVarArg=*/ false);
+      FunctionType::get(ShadowTy, DFSanUnionLoadArgs, /*isVarArg=*/ false,
+                        DL.getProgramAddressSpace());
   DFSanUnimplementedFnTy = FunctionType::get(
-      Type::getVoidTy(*Ctx), Type::getInt8PtrTy(*Ctx), /*isVarArg=*/false);
+      Type::getVoidTy(*Ctx), Type::getInt8PtrTy(*Ctx), /*isVarArg=*/false,
+      DL.getProgramAddressSpace());
   Type *DFSanSetLabelArgs[3] = { ShadowTy, Type::getInt8PtrTy(*Ctx), IntptrTy };
   DFSanSetLabelFnTy = FunctionType::get(Type::getVoidTy(*Ctx),
-                                        DFSanSetLabelArgs, /*isVarArg=*/false);
+                                        DFSanSetLabelArgs, /*isVarArg=*/false,
+                                        DL.getProgramAddressSpace());
   DFSanNonzeroLabelFnTy = FunctionType::get(
-      Type::getVoidTy(*Ctx), None, /*isVarArg=*/false);
+      Type::getVoidTy(*Ctx), None, /*isVarArg=*/false,
+      DL.getProgramAddressSpace());
   DFSanVarargWrapperFnTy = FunctionType::get(
-      Type::getVoidTy(*Ctx), Type::getInt8PtrTy(*Ctx), /*isVarArg=*/false);
+      Type::getVoidTy(*Ctx), Type::getInt8PtrTy(*Ctx), /*isVarArg=*/false,
+      DL.getProgramAddressSpace());
 
   if (GetArgTLSPtr) {
     Type *ArgTLSTy = ArrayType::get(ShadowTy, 64);
@@ -476,14 +485,16 @@ bool DataFlowSanitizer::doInitialization(Module &M) {
     GetArgTLS = ConstantExpr::getIntToPtr(
         ConstantInt::get(IntptrTy, uintptr_t(GetArgTLSPtr)),
         PointerType::getUnqual(
-            FunctionType::get(PointerType::getUnqual(ArgTLSTy), false)));
+            FunctionType::get(PointerType::getUnqual(ArgTLSTy), false,
+                              DL.getProgramAddressSpace())));
   }
   if (GetRetvalTLSPtr) {
     RetvalTLS = nullptr;
     GetRetvalTLS = ConstantExpr::getIntToPtr(
         ConstantInt::get(IntptrTy, uintptr_t(GetRetvalTLSPtr)),
         PointerType::getUnqual(
-            FunctionType::get(PointerType::getUnqual(ShadowTy), false)));
+            FunctionType::get(PointerType::getUnqual(ShadowTy), false,
+                              DL.getProgramAddressSpace())));
   }
 
   ColdCallWeights = MDBuilder(*Ctx).createBranchWeights(1, 1000);

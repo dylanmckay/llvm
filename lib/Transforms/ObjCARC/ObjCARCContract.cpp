@@ -408,8 +408,10 @@ bool ObjCARCContract::tryToPeepholeInstruction(
   SmallPtrSetImpl<Instruction *> &DependingInsts,
   SmallPtrSetImpl<const BasicBlock *> &Visited,
   bool &TailOkForStoreStrongs) {
-    // Only these library routines return their argument. In particular,
-    // objc_retainBlock does not necessarily return its argument.
+  const auto &DL = F.getParent()->getDataLayout();
+
+  // Only these library routines return their argument. In particular,
+  // objc_retainBlock does not necessarily return its argument.
   ARCInstKind Class = GetBasicARCInstKind(Inst);
     switch (Class) {
     case ARCInstKind::FusedRetainAutorelease:
@@ -454,7 +456,7 @@ bool ObjCARCContract::tryToPeepholeInstruction(
         Changed = true;
         InlineAsm *IA = InlineAsm::get(
             FunctionType::get(Type::getVoidTy(Inst->getContext()),
-                              /*isVarArg=*/false),
+                              /*isVarArg=*/false, DL.getProgramAddressSpace()),
             RVInstMarker->getString(),
             /*Constraints=*/"", /*hasSideEffects=*/true);
         CallInst::Create(IA, "", Inst);

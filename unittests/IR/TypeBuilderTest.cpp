@@ -148,41 +148,41 @@ TEST(TypeBuilderTest, Derived) {
 TEST(TypeBuilderTest, Functions) {
   LLVMContext Context;
   std::vector<Type*> params;
-  EXPECT_EQ(FunctionType::get(Type::getVoidTy(Context), params, false),
+  EXPECT_EQ(FunctionType::get(Type::getVoidTy(Context), params, false, 0),
             (TypeBuilder<void(), true>::get(Context)));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true, 0),
             (TypeBuilder<int8_t(...), false>::get(Context)));
   params.push_back(TypeBuilder<int32_t *, false>::get(Context));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, false),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, false, 0),
             (TypeBuilder<int8_t(const int32_t *), false>::get(Context)));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true, 0),
             (TypeBuilder<int8_t(const int32_t *, ...), false>::get(Context)));
   params.push_back(TypeBuilder<char *, false>::get(Context));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, false),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, false, 0),
             (TypeBuilder<int8_t(int32_t *, void *), false>::get(Context)));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true, 0),
             (TypeBuilder<int8_t(int32_t *, char *, ...), false>::get(Context)));
   params.push_back(TypeBuilder<char, false>::get(Context));
   EXPECT_EQ(
-      FunctionType::get(Type::getInt8Ty(Context), params, false),
+      FunctionType::get(Type::getInt8Ty(Context), params, false, 0),
       (TypeBuilder<int8_t(int32_t *, void *, char), false>::get(Context)));
   EXPECT_EQ(
-      FunctionType::get(Type::getInt8Ty(Context), params, true),
+      FunctionType::get(Type::getInt8Ty(Context), params, true, 0),
       (TypeBuilder<int8_t(int32_t *, char *, char, ...), false>::get(Context)));
   params.push_back(TypeBuilder<char, false>::get(Context));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, false),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, false, 0),
             (TypeBuilder<int8_t(int32_t *, void *, char, char), false>::get(
                 Context)));
   EXPECT_EQ(
-      FunctionType::get(Type::getInt8Ty(Context), params, true),
+      FunctionType::get(Type::getInt8Ty(Context), params, true, 0),
       (TypeBuilder<int8_t(int32_t *, char *, char, char, ...), false>::get(
           Context)));
   params.push_back(TypeBuilder<char, false>::get(Context));
   EXPECT_EQ(
-      FunctionType::get(Type::getInt8Ty(Context), params, false),
+      FunctionType::get(Type::getInt8Ty(Context), params, false, 0),
       (TypeBuilder<int8_t(int32_t *, void *, char, char, char), false>::get(
           Context)));
-  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true),
+  EXPECT_EQ(FunctionType::get(Type::getInt8Ty(Context), params, true, 0),
             (TypeBuilder<int8_t(int32_t *, char *, char, char, char, ...),
                          false>::get(Context)));
 }

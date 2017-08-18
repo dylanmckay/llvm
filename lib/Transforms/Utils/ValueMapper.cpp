@@ -881,7 +881,8 @@ void Mapper::remapInstruction(Instruction *I) {
     for (Type *Ty : FTy->params())
       Tys.push_back(TypeMapper->remapType(Ty));
     CS.mutateFunctionType(FunctionType::get(
-        TypeMapper->remapType(I->getType()), Tys, FTy->isVarArg()));
+        TypeMapper->remapType(I->getType()), Tys, FTy->isVarArg(),
+        FTy->getAddressSpace()));
     return;
   }
   if (auto *AI = dyn_cast<AllocaInst>(I))

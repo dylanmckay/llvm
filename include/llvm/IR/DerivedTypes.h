@@ -49,10 +49,11 @@ public:
   /// This enum is just used to hold constants we need for IntegerType.
   enum {
     MIN_INT_BITS = 1,        ///< Minimum number of bits that can be specified
-    MAX_INT_BITS = (1<<24)-1 ///< Maximum number of bits that can be specified
-      ///< Note that bit width is stored in the Type classes SubclassData field
-      ///< which has 24 bits. This yields a maximum bit width of 16,777,215
-      ///< bits.
+    /// Maximum number of bits that can be specified
+    /// Note that bit width is stored in the Type classes SubclassData field
+    /// which has 24 bits. This yields a maximum bit width of 16,777,215
+    /// bits.
+    MAX_INT_BITS = (1<<SUBCLASS_DATA_BITS)-1
   };
 
   /// This static method is the primary way of constructing an IntegerType.
@@ -101,7 +102,8 @@ unsigned Type::getIntegerBitWidth() const {
 /// Class to represent function types
 ///
 class FunctionType : public Type {
-  FunctionType(Type *Result, ArrayRef<Type*> Params, bool IsVarArgs);
+  FunctionType(Type *Result, ArrayRef<Type*> Params, bool IsVarArgs,
+               unsigned AddrSpace);
 
 public:
   FunctionType(const FunctionType &) = delete;
@@ -109,10 +111,11 @@ public:
 
   /// This static method is the primary way of constructing a FunctionType.
   static FunctionType *get(Type *Result,
-                           ArrayRef<Type*> Params, bool isVarArg);
+                           ArrayRef<Type*> Params, bool isVarArg,
+                           unsigned AddrSpace);
 
   /// Create a FunctionType taking no parameters.
-  static FunctionType *get(Type *Result, bool isVarArg);
+  static FunctionType *get(Type *Result, bool isVarArg, unsigned AddrSpace);
 
   /// Return true if the specified type is valid as a return type.
   static bool isValidReturnType(Type *RetTy);
@@ -120,7 +123,15 @@ public:
   /// Return true if the specified type is valid as an argument type.
   static bool isValidArgumentType(Type *ArgTy);
 
-  bool isVarArg() const { return getSubclassData()!=0; }
+  bool isVarArg() const {
+    return (getSubclassData() & 1) != 0;
+  }
+
+  unsigned getAddressSpace() const {
+    unsigned Mask = ~1;
+    return (getSubclassData() & Mask) >> 1;
+  }
+
   Type *getReturnType() const { return ContainedTys[0]; }
 
   using param_iterator = Type::subtype_iterator;

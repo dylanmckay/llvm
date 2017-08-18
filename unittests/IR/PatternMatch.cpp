@@ -40,7 +40,8 @@ struct PatternMatchTest : ::testing::Test {
   PatternMatchTest()
       : M(new Module("PatternMatchTestModule", Ctx)),
         F(Function::Create(
-            FunctionType::get(Type::getVoidTy(Ctx), /* IsVarArg */ false),
+            FunctionType::get(Type::getVoidTy(Ctx), /*IsVarArg=*/false,
+                              /*AddrSpace=*/0),
             Function::ExternalLinkage, "f", M.get())),
         BB(BasicBlock::Create(Ctx, "entry", F)), IRB(BB) {}
 };

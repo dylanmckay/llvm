@@ -19,6 +19,8 @@
 #include "llvm/IR/LLVMContext.h"
 #include <climits>
 
+// FIXME: we probably need to update this for func addr space
+
 namespace llvm {
 
 /// TypeBuilder - This provides a uniform API for looking up types
@@ -255,7 +257,9 @@ template<> class TypeBuilder<const volatile void*, false>
 template<typename R, bool cross> class TypeBuilder<R(), cross> {
 public:
   static FunctionType *get(LLVMContext &Context) {
-    return FunctionType::get(TypeBuilder<R, cross>::get(Context), false);
+    unsigned AddrSpace = 0; // FIXME: don't assume this
+    return FunctionType::get(TypeBuilder<R, cross>::get(Context), false,
+                             AddrSpace);
   }
 };
 template<typename R, typename A1, bool cross> class TypeBuilder<R(A1), cross> {
@@ -264,8 +268,9 @@ public:
     Type *params[] = {
       TypeBuilder<A1, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                             params, false);
+                             params, false, AddrSpace);
   }
 };
 template<typename R, typename A1, typename A2, bool cross>
@@ -276,8 +281,9 @@ public:
       TypeBuilder<A1, cross>::get(Context),
       TypeBuilder<A2, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                             params, false);
+                             params, false, AddrSpace);
   }
 };
 template<typename R, typename A1, typename A2, typename A3, bool cross>
@@ -289,8 +295,9 @@ public:
       TypeBuilder<A2, cross>::get(Context),
       TypeBuilder<A3, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                             params, false);
+                             params, false, AddrSpace);
   }
 };
 
@@ -305,8 +312,9 @@ public:
       TypeBuilder<A3, cross>::get(Context),
       TypeBuilder<A4, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                             params, false);
+                             params, false, AddrSpace);
   }
 };
 
@@ -322,15 +330,18 @@ public:
       TypeBuilder<A4, cross>::get(Context),
       TypeBuilder<A5, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                             params, false);
+                             params, false, AddrSpace);
   }
 };
 
 template<typename R, bool cross> class TypeBuilder<R(...), cross> {
 public:
   static FunctionType *get(LLVMContext &Context) {
-    return FunctionType::get(TypeBuilder<R, cross>::get(Context), true);
+    unsigned AddrSpace = 0; // FIXME: don't assume this
+    return FunctionType::get(TypeBuilder<R, cross>::get(Context), true,
+                             AddrSpace);
   }
 };
 template<typename R, typename A1, bool cross>
@@ -340,7 +351,8 @@ public:
     Type *params[] = {
       TypeBuilder<A1, cross>::get(Context),
     };
-    return FunctionType::get(TypeBuilder<R, cross>::get(Context), params, true);
+    unsigned AddrSpace = 0; // FIXME: don't assume this
+    return FunctionType::get(TypeBuilder<R, cross>::get(Context), params, true, AddrSpace);
   }
 };
 template<typename R, typename A1, typename A2, bool cross>
@@ -351,8 +363,9 @@ public:
       TypeBuilder<A1, cross>::get(Context),
       TypeBuilder<A2, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                                   params, true);
+                                   params, true, AddrSpace);
   }
 };
 template<typename R, typename A1, typename A2, typename A3, bool cross>
@@ -364,8 +377,9 @@ public:
       TypeBuilder<A2, cross>::get(Context),
       TypeBuilder<A3, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                                   params, true);
+                                   params, true, AddrSpace);
   }
 };
 
@@ -380,8 +394,9 @@ public:
       TypeBuilder<A3, cross>::get(Context),
       TypeBuilder<A4, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                             params, true);
+                             params, true, AddrSpace);
   }
 };
 
@@ -397,8 +412,9 @@ public:
       TypeBuilder<A4, cross>::get(Context),
       TypeBuilder<A5, cross>::get(Context),
     };
+    unsigned AddrSpace = 0; // FIXME: don't assume this
     return FunctionType::get(TypeBuilder<R, cross>::get(Context),
-                                   params, true);
+                                   params, true, AddrSpace);
   }
 };
 

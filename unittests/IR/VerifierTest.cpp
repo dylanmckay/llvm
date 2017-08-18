@@ -27,7 +27,8 @@ namespace {
 TEST(VerifierTest, Branch_i1) {
   LLVMContext C;
   Module M("M", C);
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), /*isVarArg=*/false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), /*isVarArg=*/false,
+                                        /*AddrSpace=*/0);
   Function *F = cast<Function>(M.getOrInsertFunction("foo", FTy));
   BasicBlock *Entry = BasicBlock::Create(C, "entry", F);
   BasicBlock *Exit = BasicBlock::Create(C, "exit", F);
@@ -50,7 +51,8 @@ TEST(VerifierTest, Branch_i1) {
 TEST(VerifierTest, InvalidRetAttribute) {
   LLVMContext C;
   Module M("M", C);
-  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
+  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false,
+                                        /*AddrSpace=*/0);
   Function *F = cast<Function>(M.getOrInsertFunction("foo", FTy));
   AttributeList AS = F->getAttributes();
   F->setAttributes(
@@ -68,7 +70,8 @@ TEST(VerifierTest, CrossModuleRef) {
   Module M1("M1", C);
   Module M2("M2", C);
   Module M3("M3", C);
-  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
+  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false,
+                                        /*AddrSpace=*/0);
   Function *F1 = cast<Function>(M1.getOrInsertFunction("foo1", FTy));
   Function *F2 = cast<Function>(M2.getOrInsertFunction("foo2", FTy));
   Function *F3 = cast<Function>(M3.getOrInsertFunction("foo3", FTy));
@@ -139,7 +142,8 @@ TEST(VerifierTest, InvalidFunctionLinkage) {
   LLVMContext C;
   Module M("M", C);
 
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), /*isVarArg=*/false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), /*isVarArg=*/false,
+                                        /*AddrSpace=*/0);
   Function::Create(FTy, GlobalValue::LinkOnceODRLinkage, "foo", &M);
   std::string Error;
   raw_string_ostream ErrorOS(Error);
@@ -183,7 +187,7 @@ TEST(VerifierTest, StripInvalidDebugInfo) {
                        GlobalValue::ExternalLinkage, nullptr, "g");
 
     auto *F = cast<Function>(M.getOrInsertFunction(
-        "f", FunctionType::get(Type::getVoidTy(C), false)));
+        "f", FunctionType::get(Type::getVoidTy(C), false, 0)));
     IRBuilder<> Builder(BasicBlock::Create(C, "", F));
     Builder.CreateUnreachable();
     F->setSubprogram(DIB.createFunction(CU, "f", "f",

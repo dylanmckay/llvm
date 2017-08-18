@@ -1578,9 +1578,9 @@ Error BitcodeReader::parseTypeTableBody() {
       ResultTy = PointerType::get(ResultTy, AddressSpace);
       break;
     }
-    case bitc::TYPE_CODE_FUNCTION_OLD: {
+    case bitc::TYPE_CODE_FUNCTION_VERY_OLD: {
       // FIXME: attrid is dead, remove it in LLVM 4.0
-      // FUNCTION: [vararg, attrid, retty, paramty x N]
+      // FUNCTION_VERY_OLD: [vararg, attrid, retty, paramty x N]
       if (Record.size() < 3)
         return error("Invalid record");
       SmallVector<Type*, 8> ArgTys;
@@ -1595,11 +1595,14 @@ Error BitcodeReader::parseTypeTableBody() {
       if (!ResultTy || ArgTys.size() < Record.size()-3)
         return error("Invalid type");
 
-      ResultTy = FunctionType::get(ResultTy, ArgTys, Record[0]);
+      // We can assume that address space is zero here because no backend
+      // supported non-default address spaces on functions prior to release 5.0.
+      unsigned AddrSpace = 0;
+      ResultTy = FunctionType::get(ResultTy, ArgTys, Record[0], AddrSpace);
       break;
     }
-    case bitc::TYPE_CODE_FUNCTION: {
-      // FUNCTION: [vararg, retty, paramty x N]
+    case bitc::TYPE_CODE_FUNCTION_OLD: {
+      // FUNCTION_OLD: [vararg, retty, paramty x N]
       if (Record.size() < 2)
         return error("Invalid record");
       SmallVector<Type*, 8> ArgTys;
@@ -1617,7 +1620,33 @@ Error BitcodeReader::parseTypeTableBody() {
       if (!ResultTy || ArgTys.size() < Record.size()-2)
         return error("Invalid type");
 
-      ResultTy = FunctionType::get(ResultTy, ArgTys, Record[0]);
+      // FIXME: I don't think we can add this in a backwards compatible way
+      // without some digusting hack.
+      unsigned AddrSpace = 0;
+      ResultTy = FunctionType::get(ResultTy, ArgTys, Record[0], AddrSpace);
+      break;
+    }
+    case bitc::TYPE_CODE_FUNCTION: {
+      // FUNCTION: [vararg, addrspace, retty, paramty x N]
+      if (Record.size() < 3)
+        return error("Invalid record");
+      SmallVector<Type*, 8> ArgTys;
+      for (unsigned i = 3, e = Record.size(); i != e; ++i) {
+        if (Type *T = getTypeByID(Record[i])) {
+          if (!FunctionType::isValidArgumentType(T))
+            return error("Invalid function argument type");
+          ArgTys.push_back(T);
+        }
+        else
+          break;
+      }
+
+      ResultTy = getTypeByID(Record[2]);
+      if (!ResultTy || ArgTys.size() < Record.size()-3)
+        return error("Invalid type");
+
+      unsigned AddrSpace = Record[1];
+      ResultTy = FunctionType::get(ResultTy, ArgTys, Record[0], AddrSpace);
       break;
     }
     case bitc::TYPE_CODE_STRUCT_ANON: {  // STRUCT: [ispacked, eltty x N]

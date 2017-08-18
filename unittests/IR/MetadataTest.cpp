@@ -118,7 +118,7 @@ protected:
   }
   Function *getFunction(StringRef Name) {
     return cast<Function>(M.getOrInsertFunction(
-        Name, FunctionType::get(Type::getVoidTy(Context), None, false)));
+        Name, FunctionType::get(Type::getVoidTy(Context), None, false, 0)));
   }
 };
 typedef MetadataTest MDStringTest;
@@ -346,7 +346,7 @@ TEST_F(MDNodeTest, PrintFromModule) {
 
 TEST_F(MDNodeTest, PrintFromFunction) {
   Module M("test", Context);
-  auto *FTy = FunctionType::get(Type::getVoidTy(Context), false);
+  auto *FTy = FunctionType::get(Type::getVoidTy(Context), false, 0);
   auto *F0 = Function::Create(FTy, GlobalValue::ExternalLinkage, "F0", &M);
   auto *F1 = Function::Create(FTy, GlobalValue::ExternalLinkage, "F1", &M);
   auto *BB0 = BasicBlock::Create(Context, "entry", F0);
@@ -371,10 +371,11 @@ TEST_F(MDNodeTest, PrintFromMetadataAsValue) {
 
   auto *Intrinsic =
       Function::Create(FunctionType::get(Type::getVoidTy(Context),
-                                         Type::getMetadataTy(Context), false),
+                                         Type::getMetadataTy(Context), false,
+                                         0),
                        GlobalValue::ExternalLinkage, "llvm.intrinsic", &M);
 
-  auto *FTy = FunctionType::get(Type::getVoidTy(Context), false);
+  auto *FTy = FunctionType::get(Type::getVoidTy(Context), false, 0);
   auto *F0 = Function::Create(FTy, GlobalValue::ExternalLinkage, "F0", &M);
   auto *F1 = Function::Create(FTy, GlobalValue::ExternalLinkage, "F1", &M);
   auto *BB0 = BasicBlock::Create(Context, "entry", F0);

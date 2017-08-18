@@ -356,7 +356,8 @@ bool AMDGPURewriteOutArguments::runOnFunction(Function &F) {
 
   FunctionType *NewFuncTy = FunctionType::get(NewRetTy,
                                               F.getFunctionType()->params(),
-                                              F.isVarArg());
+                                              F.isVarArg(),
+                                              F.getAddressSpace());
 
   DEBUG(dbgs() << "Computed new return type: " << *NewRetTy << '\n');
 

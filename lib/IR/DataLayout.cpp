@@ -222,6 +222,14 @@ static unsigned inBytes(unsigned Bits) {
   return Bits / 8;
 }
 
+/// Gets an unsigned address space integer, including error checks.
+static unsigned int getAddrSpace(StringRef R) {
+  unsigned AddrSpace = getInt(R);
+  if (!isUInt<24>(AddrSpace))
+    report_fatal_error("Invalid address space, must be a 24-bit integer");
+  return AddrSpace;
+}
+
 void DataLayout::parseSpecifier(StringRef Desc) {
   StringRepresentation = Desc;
   while (!Desc.empty()) {
@@ -360,13 +368,11 @@ void DataLayout::parseSpecifier(StringRef Desc) {
       break;
     }
     case 'P': { // Function address space.
-      ProgramAddrSpace = inBytes(getInt(Tok));
+      ProgramAddrSpace = getAddrSpace(Tok);
       break;
     }
     case 'A': { // Default stack/alloca address space.
-      AllocaAddrSpace = getInt(Tok);
-      if (!isUInt<24>(AllocaAddrSpace))
-        report_fatal_error("Invalid address space, must be a 24bit integer");
+      AllocaAddrSpace = getAddrSpace(Tok);
       break;
     }
     case 'm':

@@ -49,7 +49,8 @@ static void EmitInlineAsm(LLVMContext &C, BasicBlock *BB, StringRef AsmText) {
   std::vector<Value *> AsmArgs;
 
   FunctionType *AsmFTy =
-      FunctionType::get(Type::getVoidTy(C), AsmArgTypes, false);
+      FunctionType::get(Type::getVoidTy(C), AsmArgTypes, false,
+                     BB->getModule()->getDataLayout().getProgramAddressSpace());
   InlineAsm *IA = InlineAsm::get(AsmFTy, AsmText, "", true,
                                  /* IsAlignStack */ false, InlineAsm::AD_ATT);
   CallInst::Create(IA, AsmArgs, "", BB);

@@ -483,7 +483,8 @@ LLVMTypeRef LLVMFunctionType(LLVMTypeRef ReturnType,
                              LLVMTypeRef *ParamTypes, unsigned ParamCount,
                              LLVMBool IsVarArg) {
   ArrayRef<Type*> Tys(unwrap(ParamTypes), ParamCount);
-  return wrap(FunctionType::get(unwrap(ReturnType), Tys, IsVarArg != 0));
+  unsigned AddrSpace = 0; // FIXME
+  return wrap(FunctionType::get(unwrap(ReturnType), Tys, IsVarArg != 0, AddrSpace));
 }
 
 LLVMBool LLVMIsFunctionVarArg(LLVMTypeRef FunctionTy) {

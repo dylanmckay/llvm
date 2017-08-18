@@ -1709,8 +1709,10 @@ AddressSanitizerModule::CreateMetadataGlobal(Module &M, Constant *Initializer,
 }
 
 IRBuilder<> AddressSanitizerModule::CreateAsanModuleDtor(Module &M) {
+  unsigned AddrSpace = M.getDataLayout().getProgramAddressSpace();
+
   AsanDtorFunction =
-      Function::Create(FunctionType::get(Type::getVoidTy(*C), false),
+      Function::Create(FunctionType::get(Type::getVoidTy(*C), false, AddrSpace),
                        GlobalValue::InternalLinkage, kAsanModuleDtorName, &M);
   BasicBlock *AsanDtorBB = BasicBlock::Create(*C, "", AsanDtorFunction);
 
@@ -2118,6 +2120,9 @@ bool AddressSanitizerModule::runOnModule(Module &M) {
 
 void AddressSanitizer::initializeCallbacks(Module &M) {
   IRBuilder<> IRB(*C);
+
+  unsigned AddrSpace = M.getDataLayout().getProgramAddressSpace();
+
   // Create __asan_report* callbacks.
   // IsWrite, TypeSize and Exp are encoded in the function name.
   for (int Exp = 0; Exp < 2; Exp++) {
@@ -2138,12 +2143,12 @@ void AddressSanitizer::initializeCallbacks(Module &M) {
 	        checkSanitizerInterfaceFunction(M.getOrInsertFunction(
 	            kAsanReportErrorTemplate + ExpStr + TypeStr + SuffixStr +
 	                EndingStr,
-	            FunctionType::get(IRB.getVoidTy(), Args2, false)));
+	            FunctionType::get(IRB.getVoidTy(), Args2, false, AddrSpace)));
 
 	    AsanMemoryAccessCallbackSized[AccessIsWrite][Exp] =
 	        checkSanitizerInterfaceFunction(M.getOrInsertFunction(
 	            ClMemoryAccessCallbackPrefix + ExpStr + TypeStr + "N" + EndingStr,
-	            FunctionType::get(IRB.getVoidTy(), Args2, false)));
+	            FunctionType::get(IRB.getVoidTy(), Args2, false, AddrSpace)));
 
 	    for (size_t AccessSizeIndex = 0; AccessSizeIndex < kNumberOfAccessSizes;
 	         AccessSizeIndex++) {
@@ -2151,12 +2156,12 @@ void AddressSanitizer::initializeCallbacks(Module &M) {
 	      AsanErrorCallback[AccessIsWrite][Exp][AccessSizeIndex] =
 	          checkSanitizerInterfaceFunction(M.getOrInsertFunction(
 	              kAsanReportErrorTemplate + ExpStr + Suffix + EndingStr,
-	              FunctionType::get(IRB.getVoidTy(), Args1, false)));
+	              FunctionType::get(IRB.getVoidTy(), Args1, false, AddrSpace)));
 
 	      AsanMemoryAccessCallback[AccessIsWrite][Exp][AccessSizeIndex] =
 	          checkSanitizerInterfaceFunction(M.getOrInsertFunction(
 	              ClMemoryAccessCallbackPrefix + ExpStr + Suffix + EndingStr,
-	              FunctionType::get(IRB.getVoidTy(), Args1, false)));
+	              FunctionType::get(IRB.getVoidTy(), Args1, false, AddrSpace)));
 	    }
 	  }
   }
@@ -2181,7 +2186,7 @@ void AddressSanitizer::initializeCallbacks(Module &M) {
   AsanPtrSubFunction = checkSanitizerInterfaceFunction(M.getOrInsertFunction(
       kAsanPtrSub, IRB.getVoidTy(), IntptrTy, IntptrTy));
   // We insert an empty inline asm after __asan_report* to avoid callback merge.
-  EmptyAsm = InlineAsm::get(FunctionType::get(IRB.getVoidTy(), false),
+  EmptyAsm = InlineAsm::get(FunctionType::get(IRB.getVoidTy(), false, AddrSpace),
                             StringRef(""), StringRef(""),
                             /*hasSideEffects=*/true);
 }

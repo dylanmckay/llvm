@@ -296,10 +296,13 @@ Type *TypeMapTy::get(Type *Ty, SmallPtrSet<StructType *, 8> &Visited) {
   case Type::PointerTyID:
     return *Entry = PointerType::get(ElementTypes[0],
                                      cast<PointerType>(Ty)->getAddressSpace());
-  case Type::FunctionTyID:
+  case Type::FunctionTyID: {
+    auto *FTy = cast<FunctionType>(Ty);
     return *Entry = FunctionType::get(ElementTypes[0],
                                       makeArrayRef(ElementTypes).slice(1),
-                                      cast<FunctionType>(Ty)->isVarArg());
+                                      FTy->isVarArg(),
+                                      FTy->getAddressSpace());
+  }
   case Type::StructTyID: {
     auto *STy = cast<StructType>(Ty);
     bool IsPacked = STy->isPacked();

@@ -343,7 +343,8 @@ public:
   {
     SmallVector<Type*, sizeof...(ArgsTy)> ArgTys{Args...};
     return getOrInsertFunction(Name,
-                               FunctionType::get(RetTy, ArgTys, false),
+                               FunctionType::get(RetTy, ArgTys, false,
+                               DL.getProgramAddressSpace()),
                                AttributeList);
   }
 

@@ -129,6 +129,7 @@ private:
   SmallVector<uint32_t, 4> FileChecksums;
 
   Module *M;
+  const DataLayout *DL;
   LLVMContext *Ctx;
   SmallVector<std::unique_ptr<GCOVFunction>, 16> Funcs;
 };
@@ -462,7 +463,8 @@ std::string GCOVProfiler::mangleName(const DICompileUnit *CU,
 
 bool GCOVProfiler::runOnModule(Module &M) {
   this->M = &M;
-  Ctx = &M.getContext();
+  this->Ctx = &M.getContext();
+  this->DL = &M.getDataLayout();
 
   if (Options.EmitNotes) emitProfileNotes();
   if (Options.EmitData) return emitProfileArcs();
@@ -689,7 +691,8 @@ bool GCOVProfiler::emitProfileArcs() {
     // Create a small bit of code that registers the "__llvm_gcov_writeout" to
     // be executed at exit and the "__llvm_gcov_flush" function to be executed
     // when "__gcov_flush" is called.
-    FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
+    FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                                          DL->getProgramAddressSpace());
     Function *F = Function::Create(FTy, GlobalValue::InternalLinkage,
                                    "__llvm_gcov_init", M);
     F->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
@@ -701,12 +704,14 @@ bool GCOVProfiler::emitProfileArcs() {
     BasicBlock *BB = BasicBlock::Create(*Ctx, "entry", F);
     IRBuilder<> Builder(BB);
 
-    FTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
+    FTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                            DL->getProgramAddressSpace());
     Type *Params[] = {
       PointerType::get(FTy, 0),
       PointerType::get(FTy, 0)
     };
-    FTy = FunctionType::get(Builder.getVoidTy(), Params, false);
+    FTy = FunctionType::get(Builder.getVoidTy(), Params, false,
+                            DL->getProgramAddressSpace());
 
     // Initialize the environment and register the local writeout and flush
     // functions.
@@ -777,7 +782,8 @@ Constant *GCOVProfiler::getStartFileFunc() {
     Type::getInt8PtrTy(*Ctx),  // const char version[4]
     Type::getInt32Ty(*Ctx),    // uint32_t checksum
   };
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false,
+                                        DL->getProgramAddressSpace());
   return M->getOrInsertFunction("llvm_gcda_start_file", FTy);
 }
 
@@ -788,7 +794,8 @@ Constant *GCOVProfiler::getIncrementIndirectCounterFunc() {
     Int32Ty->getPointerTo(),                // uint32_t *predecessor
     Int64Ty->getPointerTo()->getPointerTo() // uint64_t **counters
   };
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false,
+                                        DL->getProgramAddressSpace());
   return M->getOrInsertFunction("__llvm_gcov_indirect_counter_increment", FTy);
 }
 
@@ -800,7 +807,8 @@ Constant *GCOVProfiler::getEmitFunctionFunc() {
     Type::getInt8Ty(*Ctx),     // uint8_t use_extra_checksum
     Type::getInt32Ty(*Ctx),    // uint32_t cfg_checksum
   };
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false,
+                                        DL->getProgramAddressSpace());
   return M->getOrInsertFunction("llvm_gcda_emit_function", FTy);
 }
 
@@ -809,17 +817,20 @@ Constant *GCOVProfiler::getEmitArcsFunc() {
     Type::getInt32Ty(*Ctx),     // uint32_t num_counters
     Type::getInt64PtrTy(*Ctx),  // uint64_t *counters
   };
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false,
+                                        DL->getProgramAddressSpace());
   return M->getOrInsertFunction("llvm_gcda_emit_arcs", FTy);
 }
 
 Constant *GCOVProfiler::getSummaryInfoFunc() {
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                                        DL->getProgramAddressSpace());
   return M->getOrInsertFunction("llvm_gcda_summary_info", FTy);
 }
 
 Constant *GCOVProfiler::getEndFileFunc() {
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                                        DL->getProgramAddressSpace());
   return M->getOrInsertFunction("llvm_gcda_end_file", FTy);
 }
 
@@ -838,7 +849,8 @@ GlobalVariable *GCOVProfiler::getEdgeStateValue() {
 
 Function *GCOVProfiler::insertCounterWriteout(
     ArrayRef<std::pair<GlobalVariable *, MDNode *> > CountersBySP) {
-  FunctionType *WriteoutFTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
+  FunctionType *WriteoutFTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                                                DL->getProgramAddressSpace());
   Function *WriteoutF = M->getFunction("__llvm_gcov_writeout");
   if (!WriteoutF)
     WriteoutF = Function::Create(WriteoutFTy, GlobalValue::InternalLinkage,
@@ -953,7 +965,8 @@ void GCOVProfiler::insertIndirectCounterIncrement() {
 
 Function *GCOVProfiler::
 insertFlush(ArrayRef<std::pair<GlobalVariable*, MDNode*> > CountersBySP) {
-  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                                        DL->getProgramAddressSpace());
   Function *FlushF = M->getFunction("__llvm_gcov_flush");
   if (!FlushF)
     FlushF = Function::Create(FTy, GlobalValue::InternalLinkage,

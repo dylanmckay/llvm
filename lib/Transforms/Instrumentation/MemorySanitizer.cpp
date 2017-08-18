@@ -415,6 +415,8 @@ static GlobalVariable *createPrivateNonConstGlobalForString(Module &M,
 
 /// \brief Insert extern declaration of runtime-provided functions and globals.
 void MemorySanitizer::initializeCallbacks(Module &M) {
+  const auto &DL = M.getDataLayout();
+
   // Only do this once.
   if (WarningFn)
     return;
@@ -490,7 +492,8 @@ void MemorySanitizer::initializeCallbacks(Module &M) {
     "__msan_origin_tls", nullptr, GlobalVariable::InitialExecTLSModel);
 
   // We insert an empty inline asm after __msan_report* to avoid callback merge.
-  EmptyAsm = InlineAsm::get(FunctionType::get(IRB.getVoidTy(), false),
+  EmptyAsm = InlineAsm::get(FunctionType::get(IRB.getVoidTy(), false,
+                                              DL.getProgramAddressSpace()),
                             StringRef(""), StringRef(""),
                             /*hasSideEffects=*/true);
 }
@@ -499,7 +502,7 @@ void MemorySanitizer::initializeCallbacks(Module &M) {
 ///
 /// inserts a call to __msan_init to the module's constructor list.
 bool MemorySanitizer::doInitialization(Module &M) {
-  auto &DL = M.getDataLayout();
+  const auto &DL = M.getDataLayout();
 
   Triple TargetTriple(M.getTargetTriple());
   switch (TargetTriple.getOS()) {

@@ -286,7 +286,7 @@ TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
   LLVMContext Ctx;
   std::unique_ptr<Module> M(new Module("MyModule", Ctx));
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx),
-                                        /*isVarArg=*/false);
+                                        /*isVarArg=*/false, /*AddrSpace=*/0);
   Function *F =
       Function::Create(FTy, Function::ExternalLinkage, "caller", M.get());
   BasicBlock *BB = BasicBlock::Create(Ctx, "", F);
@@ -893,7 +893,7 @@ TEST_P(MaybeSparseInstrProfTest, instr_prof_symtab_module_test) {
   LLVMContext Ctx;
   std::unique_ptr<Module> M = llvm::make_unique<Module>("MyModule.cpp", Ctx);
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx),
-                                        /*isVarArg=*/false);
+                                        /*isVarArg=*/false, /*AddrSpace=*/0);
   Function::Create(FTy, Function::ExternalLinkage, "Gfoo", M.get());
   Function::Create(FTy, Function::ExternalLinkage, "Gblah", M.get());
   Function::Create(FTy, Function::ExternalLinkage, "Gbar", M.get());

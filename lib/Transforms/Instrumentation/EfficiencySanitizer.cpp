@@ -519,10 +519,12 @@ Constant *EfficiencySanitizer::createEsanInitToolInfoArg(Module &M,
 }
 
 void EfficiencySanitizer::createDestructor(Module &M, Constant *ToolInfoArg) {
+  const auto &DL = M.getDataLayout();
+
   PointerType *Int8PtrTy = Type::getInt8PtrTy(*Ctx);
-  EsanDtorFunction = Function::Create(FunctionType::get(Type::getVoidTy(*Ctx),
-                                                        false),
-                                      GlobalValue::InternalLinkage,
+  auto *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false,
+                                DL.getProgramAddressSpace());
+  EsanDtorFunction = Function::Create(FTy, GlobalValue::InternalLinkage,
                                       EsanModuleDtorName, &M);
   ReturnInst::Create(*Ctx, BasicBlock::Create(*Ctx, "", EsanDtorFunction));
   IRBuilder<> IRB_Dtor(EsanDtorFunction->getEntryBlock().getTerminator());

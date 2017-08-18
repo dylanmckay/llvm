@@ -27,7 +27,7 @@ TEST(IntegerDivision, SDiv) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt32Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt32Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -57,7 +57,7 @@ TEST(IntegerDivision, UDiv) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt32Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt32Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -87,7 +87,7 @@ TEST(IntegerDivision, SRem) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt32Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt32Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -117,7 +117,7 @@ TEST(IntegerDivision, URem) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt32Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt32Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -148,7 +148,7 @@ TEST(IntegerDivision, SDiv64) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt64Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt64Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -178,7 +178,7 @@ TEST(IntegerDivision, UDiv64) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt64Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt64Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -208,7 +208,7 @@ TEST(IntegerDivision, SRem64) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt64Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt64Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 
@@ -238,7 +238,7 @@ TEST(IntegerDivision, URem64) {
 
   SmallVector<Type*, 2> ArgTys(2, Builder.getInt64Ty());
   Function *F = Function::Create(FunctionType::get(Builder.getInt64Ty(),
-                                                   ArgTys, false),
+                                                   ArgTys, false, 0),
                                  GlobalValue::ExternalLinkage, "F", &M);
   assert(F->arg_size() == 2);
 

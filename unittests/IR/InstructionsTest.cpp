@@ -61,7 +61,7 @@ protected:
     FArgTypes.push_back(Type::getInt32Ty(Ctx));
     FArgTypes.push_back(Type::getInt64Ty(Ctx));
     FunctionType *FTy =
-        FunctionType::get(Type::getVoidTy(Ctx), FArgTypes, false);
+        FunctionType::get(Type::getVoidTy(Ctx), FArgTypes, false, 0);
     F = Function::Create(FTy, Function::ExternalLinkage, "", M.get());
   }
 
@@ -495,7 +495,7 @@ TEST(InstructionsTest, CloneCall) {
   LLVMContext C;
   Type *Int32Ty = Type::getInt32Ty(C);
   Type *ArgTys[] = {Int32Ty, Int32Ty, Int32Ty};
-  Type *FnTy = FunctionType::get(Int32Ty, ArgTys, /*isVarArg=*/false);
+  Type *FnTy = FunctionType::get(Int32Ty, ArgTys, /*isVarArg=*/false, 0);
   Value *Callee = Constant::getNullValue(FnTy->getPointerTo());
   Value *Args[] = {
     ConstantInt::get(Int32Ty, 1),
@@ -528,7 +528,7 @@ TEST(InstructionsTest, CloneCall) {
 TEST(InstructionsTest, AlterCallBundles) {
   LLVMContext C;
   Type *Int32Ty = Type::getInt32Ty(C);
-  Type *FnTy = FunctionType::get(Int32Ty, Int32Ty, /*isVarArg=*/false);
+  Type *FnTy = FunctionType::get(Int32Ty, Int32Ty, /*isVarArg=*/false, 0);
   Value *Callee = Constant::getNullValue(FnTy->getPointerTo());
   Value *Args[] = {ConstantInt::get(Int32Ty, 42)};
   OperandBundleDef OldBundle("before", UndefValue::get(Int32Ty));
@@ -555,7 +555,7 @@ TEST(InstructionsTest, AlterCallBundles) {
 TEST(InstructionsTest, AlterInvokeBundles) {
   LLVMContext C;
   Type *Int32Ty = Type::getInt32Ty(C);
-  Type *FnTy = FunctionType::get(Int32Ty, Int32Ty, /*isVarArg=*/false);
+  Type *FnTy = FunctionType::get(Int32Ty, Int32Ty, /*isVarArg=*/false, 0);
   Value *Callee = Constant::getNullValue(FnTy->getPointerTo());
   Value *Args[] = {ConstantInt::get(Int32Ty, 42)};
   std::unique_ptr<BasicBlock> NormalDest(BasicBlock::Create(C));
