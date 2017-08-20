@@ -4945,7 +4945,10 @@ SwitchLookupTable::SwitchLookupTable(
 
   Array = new GlobalVariable(M, ArrayTy, /*constant=*/true,
                              GlobalVariable::PrivateLinkage, Initializer,
-                             "switch.table." + FuncName);
+                             "switch.table." + FuncName,
+                             /*InsertBefore=*/nullptr,
+                             GlobalValue::NotThreadLocal,
+                             DL.getProgramAddressSpace());
   Array->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
   Kind = ArrayKind;
 }
