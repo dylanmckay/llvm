@@ -137,7 +137,8 @@ Function *GenEmptyFunction(Module *M) {
     Type::getInt8Ty(Context)
   };
 
-  auto *FuncTy = FunctionType::get(Type::getVoidTy(Context), ArgsTy, false);
+  auto *FuncTy = FunctionType::get(Type::getVoidTy(Context), ArgsTy, false,
+                                   M->getDataLayout().getProgramAddressSpace());
   // Pick a unique name to describe the input parameters
   Twine Name = "autogen_SD" + Twine{SeedCL};
   auto *Func = Function::Create(FuncTy, GlobalValue::ExternalLinkage, Name, M);
