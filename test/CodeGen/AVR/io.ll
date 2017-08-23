@@ -1,13 +1,13 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-define i8 @read8() {
+define i8 @read8() addrspace(1) {
 ; CHECK-LABEL: read8
 ; CHECK: in r24, 8
   %1 = load i8, i8* inttoptr (i16 40 to i8*)
   ret i8 %1
 }
 
-define i16 @read16() {
+define i16 @read16() addrspace(1) {
 ; CHECK-LABEL: read16
 ; CHECK: in r24, 8
 ; CHECK: in r25, 9
@@ -15,7 +15,7 @@ define i16 @read16() {
   ret i16 %1
 }
 
-define i32 @read32() {
+define i32 @read32() addrspace(1) {
 ; CHECK-LABEL: read32
 ; CHECK: in r22, 8
 ; CHECK: in r23, 9
@@ -25,7 +25,7 @@ define i32 @read32() {
   ret i32 %1
 }
 
-define i64 @read64() {
+define i64 @read64() addrspace(1) {
 ; CHECK-LABEL: read64
 ; CHECK: in r18, 8
 ; CHECK: in r19, 9
@@ -39,14 +39,14 @@ define i64 @read64() {
   ret i64 %1
 }
 
-define void @write8() {
+define void @write8() addrspace(1) {
 ; CHECK-LABEL: write8
 ; CHECK: out 8
   store i8 22, i8* inttoptr (i16 40 to i8*)
   ret void
 }
 
-define void @write16() {
+define void @write16() addrspace(1) {
 ; CHECK-LABEL: write16
 ; CHECK: out 9
 ; CHECK: out 8
@@ -54,7 +54,7 @@ define void @write16() {
   ret void
 }
 
-define void @write32() {
+define void @write32() addrspace(1) {
 ; CHECK-LABEL: write32
 ; CHECK: out 11
 ; CHECK: out 10
@@ -64,7 +64,7 @@ define void @write32() {
   ret void
 }
 
-define void @write64() {
+define void @write64() addrspace(1) {
 ; CHECK-LABEL: write64
 ; CHECK: out 15
 ; CHECK: out 14
@@ -78,7 +78,7 @@ define void @write64() {
   ret void
 }
 
-define void @sbi8() {
+define void @sbi8() addrspace(1) {
 ; CHECK-LABEL: sbi8
 ; CHECK: sbi 8, 5
   %1 = load i8, i8* inttoptr (i16 40 to i8*)
@@ -87,7 +87,7 @@ define void @sbi8() {
   ret void
 }
 
-define void @cbi8() {
+define void @cbi8() addrspace(1) {
 ; CHECK-LABEL: cbi8
 ; CHECK: cbi 8, 5
   %1 = load volatile i8, i8* inttoptr (i16 40 to i8*)

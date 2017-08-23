@@ -1,7 +1,7 @@
 ; RUN: llc -mattr=mul,movw < %s -march=avr | FileCheck %s
 
 ; Unsigned 8-bit remision
-define i8 @urem8(i8 %a, i8 %b) {
+define i8 @urem8(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: rem8:
 ; CHECK: call __udivmodqi4
 ; CHECK-NEXT: mov r24, r25
@@ -11,7 +11,7 @@ define i8 @urem8(i8 %a, i8 %b) {
 }
 
 ; Signed 8-bit remision
-define i8 @srem8(i8 %a, i8 %b) {
+define i8 @srem8(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: srem8:
 ; CHECK: call __divmodqi4
 ; CHECK-NEXT: mov r24, r25
@@ -21,7 +21,7 @@ define i8 @srem8(i8 %a, i8 %b) {
 }
 
 ; Unsigned 16-bit remision
-define i16 @urem16(i16 %a, i16 %b) {
+define i16 @urem16(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: urem16:
 ; CHECK: call __udivmodhi4
 ; CHECK-NEXT: ret
@@ -30,7 +30,7 @@ define i16 @urem16(i16 %a, i16 %b) {
 }
 
 ; Signed 16-bit remision
-define i16 @srem16(i16 %a, i16 %b) {
+define i16 @srem16(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: srem16:
 ; CHECK: call __divmodhi4
 ; CHECK-NEXT: ret
@@ -39,7 +39,7 @@ define i16 @srem16(i16 %a, i16 %b) {
 }
 
 ; Unsigned 32-bit remision
-define i32 @urem32(i32 %a, i32 %b) {
+define i32 @urem32(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: urem32:
 ; CHECK: call __udivmodsi4
 ; CHECK-NEXT: ret
@@ -48,7 +48,7 @@ define i32 @urem32(i32 %a, i32 %b) {
 }
 
 ; Signed 32-bit remision
-define i32 @srem32(i32 %a, i32 %b) {
+define i32 @srem32(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: srem32:
 ; CHECK: call __divmodsi4
 ; CHECK-NEXT: ret

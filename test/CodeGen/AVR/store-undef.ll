@@ -4,7 +4,7 @@
 ; to an undefined pointer.
 
 ; CHECK-LABEL: foo
-define void @foo() {
+define void @foo() addrspace(1) {
 
   ; CHECK:      ldi [[SRC:r[0-9]+]], 0
   ; CHECK-NEXT: st [[PTRREG:X|Y|Z]], [[SRC]]

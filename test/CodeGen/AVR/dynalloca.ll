@@ -1,8 +1,8 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-declare void @foo(i16*, i16*, i8*)
+declare void @foo(i16*, i16*, i8*) addrspace(1)
 
-define void @test1(i16 %x) {
+define void @test1(i16 %x) addrspace(1) {
 ; CHECK-LABEL: test1:
 ; CHECK: out 61, r28
 ; SP copy
@@ -44,12 +44,12 @@ define void @test1(i16 %x) {
   ret void
 }
 
-declare void @foo2(i16*, i64, i64, i64)
+declare void @foo2(i16*, i64, i64, i64) addrspace(1)
 
 ; Test that arguments are passed through pushes into the call instead of
 ; allocating the call frame space in the prologue. Also test that SP is restored
 ; after the call frame is restored and not before.
-define void @dynalloca2(i16 %x) {
+define void @dynalloca2(i16 %x) addrspace(1) {
 ; CHECK-LABEL: dynalloca2:
 ; CHECK: in [[SPCOPY1:r[0-9]+]], 61
 ; CHECK: in [[SPCOPY2:r[0-9]+]], 62

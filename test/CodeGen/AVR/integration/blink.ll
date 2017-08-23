@@ -31,7 +31,7 @@
 
 ; Sets up the data direction register.
 ; CHECK-LABEL: setup_ddr
-define void @setup_ddr() {
+define void @setup_ddr() addrspace(1) {
 entry:
 
   ; This should load the value of DDRB, OR it with the bit number and store
@@ -55,7 +55,7 @@ entry:
 
 ; Turns on the LED.
 ; CHECK-LABEL: turn_on
-define void @turn_on() {
+define void @turn_on() addrspace(1) {
 entry:
 
   ; This should load the value of PORTB, OR it with the bit number and store
@@ -79,7 +79,7 @@ entry:
 
 ; Turns off the LED.
 ; CHECK-LABEL: turn_off
-define void @turn_off() {
+define void @turn_off() addrspace(1) {
 entry:
 
   ; This should load the value of PORTB, OR it with the bit number and store
@@ -101,7 +101,7 @@ entry:
 }
 
 ; CHECK-LABEL: main
-define i16 @main() {
+define i16 @main() addrspace(1) {
 entry:
 
   ; CHECK: call setup_ddr

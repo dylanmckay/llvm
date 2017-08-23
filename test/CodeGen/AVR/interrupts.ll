@@ -1,6 +1,6 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-define avr_intrcc void @interrupt_handler() {
+define avr_intrcc void @interrupt_handler() addrspace(1) {
 ; CHECK-LABEL: interrupt_handler:
 ; CHECK: sei
 ; CHECK-NEXT: push r0
@@ -16,7 +16,7 @@ define avr_intrcc void @interrupt_handler() {
   ret void
 }
 
-define avr_signalcc void @signal_handler() {
+define avr_signalcc void @signal_handler() addrspace(1) {
 ; CHECK-LABEL: signal_handler:
 ; CHECK-NOT: sei
 ; CHECK: push r0

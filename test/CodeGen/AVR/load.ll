@@ -1,13 +1,13 @@
 ; RUN: llc -mattr=avr6,sram < %s -march=avr | FileCheck %s
 
-define i8 @load8(i8* %x) {
+define i8 @load8(i8* %x) addrspace(1) {
 ; CHECK-LABEL: load8:
 ; CHECK: ld r24, {{[XYZ]}}
   %1 = load i8, i8* %x
   ret i8 %1
 }
 
-define i16 @load16(i16* %x) {
+define i16 @load16(i16* %x) addrspace(1) {
 ; CHECK-LABEL: load16:
 ; CHECK: ld r24, {{[YZ]}}
 ; CHECK: ldd r25, {{[YZ]}}+1
@@ -15,7 +15,7 @@ define i16 @load16(i16* %x) {
   ret i16 %1
 }
 
-define i8 @load8disp(i8* %x) {
+define i8 @load8disp(i8* %x) addrspace(1) {
 ; CHECK-LABEL: load8disp:
 ; CHECK: ldd r24, {{[YZ]}}+63
   %1 = getelementptr inbounds i8, i8* %x, i64 63
@@ -23,7 +23,7 @@ define i8 @load8disp(i8* %x) {
   ret i8 %2
 }
 
-define i8 @load8nodisp(i8* %x) {
+define i8 @load8nodisp(i8* %x) addrspace(1) {
 ; CHECK-LABEL: load8nodisp:
 ; CHECK: movw r26, r24
 ; CHECK: subi r26, 192
@@ -34,7 +34,7 @@ define i8 @load8nodisp(i8* %x) {
   ret i8 %2
 }
 
-define i16 @load16disp(i16* %x) {
+define i16 @load16disp(i16* %x) addrspace(1) {
 ; CHECK-LABEL: load16disp:
 ; CHECK: ldd r24, {{[YZ]}}+62
 ; CHECK: ldd r25, {{[YZ]}}+63
@@ -43,7 +43,7 @@ define i16 @load16disp(i16* %x) {
   ret i16 %2
 }
 
-define i16 @load16nodisp(i16* %x) {
+define i16 @load16nodisp(i16* %x) addrspace(1) {
 ; CHECK-LABEL: load16nodisp:
 ; CHECK: movw r30, r24
 ; CHECK: subi r30, 192
@@ -55,7 +55,7 @@ define i16 @load16nodisp(i16* %x) {
   ret i16 %2
 }
 
-define i8 @load8postinc(i8* %x, i8 %y) {
+define i8 @load8postinc(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: load8postinc:
 ; CHECK: ld {{.*}}, {{[XYZ]}}+
 entry:
@@ -76,7 +76,7 @@ while.end:                                        ; preds = %while.body, %entry
   ret i8 %r.0.lcssa
 }
 
-define i16 @load16postinc(i16* %x, i16 %y) {
+define i16 @load16postinc(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: load16postinc:
 ; CHECK: ld {{.*}}, {{[XYZ]}}+
 ; CHECK: ld {{.*}}, {{[XYZ]}}+
@@ -98,7 +98,7 @@ while.end:                                        ; preds = %while.body, %entry
   ret i16 %r.0.lcssa
 }
 
-define i8 @load8predec(i8* %x, i8 %y) {
+define i8 @load8predec(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: load8predec:
 ; CHECK: ld {{.*}}, -{{[XYZ]}}
 entry:
@@ -119,7 +119,7 @@ while.end:                                        ; preds = %while.body, %entry
   ret i8 %r.0.lcssa
 }
 
-define i16 @load16predec(i16* %x, i16 %y) {
+define i16 @load16predec(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: load16predec:
 ; CHECK: ld {{.*}}, -{{[XYZ]}}
 ; CHECK: ld {{.*}}, -{{[XYZ]}}

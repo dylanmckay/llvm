@@ -1,6 +1,6 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-define i1 @signed_multiplication_did_overflow(i8, i8) unnamed_addr {
+define i1 @signed_multiplication_did_overflow(i8, i8) addrspace(1) {
 ; CHECK-LABEL: signed_multiplication_did_overflow:
 entry-block:
   %2 = tail call { i8, i1 } @llvm.smul.with.overflow.i8(i8 %0, i8 %1)
@@ -28,4 +28,4 @@ entry-block:
 ; CHECK: ret
 }
 
-declare { i8, i1 } @llvm.smul.with.overflow.i8(i8, i8)
+declare { i8, i1 } @llvm.smul.with.overflow.i8(i8, i8) addrspace(1)

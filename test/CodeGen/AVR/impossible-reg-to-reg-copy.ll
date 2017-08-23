@@ -10,10 +10,10 @@
 ;
 ; This no longer occurs.
 
-declare { i16, i1 } @llvm.umul.with.overflow.i16(i16, i16)
+declare { i16, i1 } @llvm.umul.with.overflow.i16(i16, i16) addrspace(1)
 
 ; CHECK-LABEL: foo
-define void @foo() {
+define void @foo() addrspace(1) {
 entry-block:
   %0 = call { i16, i1 } @llvm.umul.with.overflow.i16(i16 undef, i16 undef)
   %1 = extractvalue { i16, i1 } %0, 1

@@ -34,7 +34,7 @@
 %struct.ss = type { i16, i16, i16 }
 
 ; CHECK-LABEL: loop
-define void @loop(%struct.ss* %x, %struct.ss** %y, i16 %z) #0 {
+define void @loop(%struct.ss* %x, %struct.ss** %y, i16 %z) addrspace(1) {
 entry:
   %x.addr = alloca %struct.ss*, align 2
   %y.addr = alloca %struct.ss**, align 2

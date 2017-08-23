@@ -3,53 +3,53 @@
 ;TODO: test returning byval structs
 ; TODO: test naked functions
 
-define void @return_void() {
+define void @return_void() addrspace(1) {
 ; CHECK: return_void:{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: #{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: ret
     ret void
 }
 
-define i8 @return8_imm() {
+define i8 @return8_imm() addrspace(1) {
 ; CHECK-LABEL: return8_imm:
 ; CHECK: ldi r24, 5
     ret i8 5
 }
 
-define i8 @return8_arg(i8 %x) {
+define i8 @return8_arg(i8 %x) addrspace(1) {
 ; CHECK: return8_arg:{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: #{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: ret
     ret i8 %x
 }
 
-define i8 @return8_arg2(i8 %x, i8 %y, i8 %z) {
+define i8 @return8_arg2(i8 %x, i8 %y, i8 %z) addrspace(1) {
 ; CHECK-LABEL: return8_arg2:
 ; CHECK: mov r24, r20
     ret i8 %z
 }
 
-define i16 @return16_imm() {
+define i16 @return16_imm() addrspace(1) {
 ; CHECK-LABEL: return16_imm:
 ; CHECK: ldi r24, 57
 ; CHECK: ldi r25, 48
     ret i16 12345
 }
 
-define i16 @return16_arg(i16 %x) {
+define i16 @return16_arg(i16 %x) addrspace(1) {
 ; CHECK: return16_arg:{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: #{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: ret
     ret i16 %x
 }
 
-define i16 @return16_arg2(i16 %x, i16 %y, i16 %z) {
+define i16 @return16_arg2(i16 %x, i16 %y, i16 %z) addrspace(1) {
 ; CHECK-LABEL: return16_arg2:
 ; CHECK: movw r24, r20
     ret i16 %z
 }
 
-define i32 @return32_imm() {
+define i32 @return32_imm() addrspace(1) {
 ; CHECK-LABEL: return32_imm:
 ; CHECK: ldi r22, 21
 ; CHECK: ldi r23, 205
@@ -58,21 +58,21 @@ define i32 @return32_imm() {
     ret i32 123456789
 }
 
-define i32 @return32_arg(i32 %x) {
+define i32 @return32_arg(i32 %x) addrspace(1) {
 ; CHECK: return32_arg:{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: #{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: ret
     ret i32 %x
 }
 
-define i32 @return32_arg2(i32 %x, i32 %y, i32 %z) {
+define i32 @return32_arg2(i32 %x, i32 %y, i32 %z) addrspace(1) {
 ; CHECK-LABEL: return32_arg2:
 ; CHECK: movw r22, r14
 ; CHECK: movw r24, r16
     ret i32 %z
 }
 
-define i64 @return64_imm() {
+define i64 @return64_imm() addrspace(1) {
 ; CHECK-LABEL: return64_imm:
 ; CHECK: ldi r18, 204
 ; CHECK: ldi r19, 204
@@ -85,14 +85,14 @@ define i64 @return64_imm() {
     ret i64 13757395258967641292
 }
 
-define i64 @return64_arg(i64 %x) {
+define i64 @return64_arg(i64 %x) addrspace(1) {
 ; CHECK: return64_arg:{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: #{{[a-zA-Z0-9 #@]*}}
 ; CHECK-NEXT: ret
     ret i64 %x
 }
 
-define i64 @return64_arg2(i64 %x, i64 %y, i64 %z) {
+define i64 @return64_arg2(i64 %x, i64 %y, i64 %z) addrspace(1) {
 ; CHECK-LABEL: return64_arg2:
 ; CHECK: push r28
 ; CHECK: push r29
@@ -109,7 +109,7 @@ define i64 @return64_arg2(i64 %x, i64 %y, i64 %z) {
     ret i64 %z
 }
 
-define i32 @return64_trunc(i32 %a, i32 %b, i32 %c, i64 %d) {
+define i32 @return64_trunc(i32 %a, i32 %b, i32 %c, i64 %d) addrspace(1) {
 ; CHECK-LABEL: return64_trunc:
 ; CHECK: push r28
 ; CHECK: push r29
@@ -123,19 +123,19 @@ define i32 @return64_trunc(i32 %a, i32 %b, i32 %c, i64 %d) {
   ret i32 %result
 }
 
-define i32 @naked(i32 %x) naked {
+define i32 @naked(i32 %x) addrspace(1) naked {
 ; CHECK-LABEL: naked:
 ; CHECK-NOT: ret
   ret i32 %x
 }
 
-define avr_intrcc void @interrupt_handler() {
+define avr_intrcc void @interrupt_handler() addrspace(1) {
 ; CHECK-LABEL: interrupt_handler:
 ; CHECK: reti
   ret void
 }
 
-define avr_signalcc void @signal_handler() {
+define avr_signalcc void @signal_handler() addrspace(1) {
 ; CHECK-LABEL: signal_handler:
 ; CHECK: reti
   ret void

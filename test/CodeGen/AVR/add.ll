@@ -1,20 +1,20 @@
 ; RUN: llc -mattr=addsubiw < %s -march=avr | FileCheck %s
 
-define i8 @add8_reg_reg(i8 %a, i8 %b) {
+define i8 @add8_reg_reg(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: add8_reg_reg:
 ; CHECK: add r24, r22
     %result = add i8 %a, %b
     ret i8 %result
 }
 
-define i8 @add8_reg_imm(i8 %a) {
+define i8 @add8_reg_imm(i8 %a) addrspace(1) {
 ; CHECK-LABEL: add8_reg_imm:
 ; CHECK: subi r24, -5
     %result = add i8 %a, 5
     ret i8 %result
 }
 
-define i8 @add8_reg_increment(i8 %a) {
+define i8 @add8_reg_increment(i8 %a) addrspace(1) {
 ; CHECK-LABEL: add8_reg_increment:
 ; CHECK: inc r24
     %result = add i8 %a, 1
@@ -22,7 +22,7 @@ define i8 @add8_reg_increment(i8 %a) {
 }
 
 
-define i16 @add16_reg_reg(i16 %a, i16 %b) {
+define i16 @add16_reg_reg(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: add16_reg_reg:
 ; CHECK: add r24, r22
 ; CHECK: adc r25, r23
@@ -30,14 +30,14 @@ define i16 @add16_reg_reg(i16 %a, i16 %b) {
     ret i16 %result
 }
 
-define i16 @add16_reg_imm(i16 %a) {
+define i16 @add16_reg_imm(i16 %a) addrspace(1) {
 ; CHECK-LABEL: add16_reg_imm:
 ; CHECK: adiw r24, 63
     %result = add i16 %a, 63
     ret i16 %result
 }
 
-define i16 @add16_reg_imm_subi(i16 %a) {
+define i16 @add16_reg_imm_subi(i16 %a) addrspace(1) {
 ; CHECK-LABEL: add16_reg_imm_subi:
 ; CHECK: subi r24, 133
 ; CHECK: sbci r25, 255
@@ -45,7 +45,7 @@ define i16 @add16_reg_imm_subi(i16 %a) {
     ret i16 %result
 }
 
-define i32 @add32_reg_reg(i32 %a, i32 %b) {
+define i32 @add32_reg_reg(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: add32_reg_reg:
 ; CHECK: add r22, r18
 ; CHECK: adc r23, r19
@@ -55,7 +55,7 @@ define i32 @add32_reg_reg(i32 %a, i32 %b) {
     ret i32 %result
 }
 
-define i32 @add32_reg_imm(i32 %a) {
+define i32 @add32_reg_imm(i32 %a) addrspace(1) {
 ; CHECK-LABEL: add32_reg_imm:
 ; CHECK: subi r22, 251
 ; CHECK: sbci r23, 255
@@ -65,7 +65,7 @@ define i32 @add32_reg_imm(i32 %a) {
     ret i32 %result
 }
 
-define i64 @add64_reg_reg(i64 %a, i64 %b) {
+define i64 @add64_reg_reg(i64 %a, i64 %b) addrspace(1) {
 ; CHECK-LABEL: add64_reg_reg:
 ; CHECK: add r18, r10
 ; CHECK: adc r20, r12
@@ -78,7 +78,7 @@ define i64 @add64_reg_reg(i64 %a, i64 %b) {
     ret i64 %result
 }
 
-define i64 @add64_reg_imm(i64 %a) {
+define i64 @add64_reg_imm(i64 %a) addrspace(1) {
 ; CHECK-LABEL: add64_reg_imm:
 ; CHECK: subi r18, 251
 ; CHECK: sbci r19, 255

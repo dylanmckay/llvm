@@ -5,7 +5,7 @@
 ; mov r17, r13
 ; lsl r17
 ; sbc r17, r17
-define i16 @sext1(i8 %x, i8 %y) {
+define i16 @sext1(i8 %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: sext1:
 ; CHECK: mov r24, r22
 ; CHECK: mov r25, r22
@@ -19,7 +19,7 @@ define i16 @sext1(i8 %x, i8 %y) {
 ; mov r17, r16
 ; lsl r17
 ; sbc r17, r17
-define i16 @sext2(i8 %x) {
+define i16 @sext2(i8 %x) addrspace(1) {
 ; CHECK-LABEL: sext2:
 ; CHECK: mov r25, r24
 ; CHECK: lsl r25

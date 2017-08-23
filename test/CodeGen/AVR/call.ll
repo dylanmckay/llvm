@@ -2,20 +2,20 @@
 
 ; TODO: test returning byval structs
 
-declare i8 @foo8_1(i8)
-declare i8 @foo8_2(i8, i8, i8)
-declare i8 @foo8_3(i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8)
+declare i8 @foo8_1(i8) addrspace(1)
+declare i8 @foo8_2(i8, i8, i8) addrspace(1)
+declare i8 @foo8_3(i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8) addrspace(1)
 
-declare i16 @foo16_1(i16, i16)
-declare i16 @foo16_2(i16, i16, i16, i16, i16, i16, i16, i16, i16, i16, i16)
+declare i16 @foo16_1(i16, i16) addrspace(1)
+declare i16 @foo16_2(i16, i16, i16, i16, i16, i16, i16, i16, i16, i16, i16) addrspace(1)
 
-declare i32 @foo32_1(i32, i32)
-declare i32 @foo32_2(i32, i32, i32, i32, i32)
+declare i32 @foo32_1(i32, i32) addrspace(1)
+declare i32 @foo32_2(i32, i32, i32, i32, i32) addrspace(1)
 
-declare i64 @foo64_1(i64)
-declare i64 @foo64_2(i64, i64, i64)
+declare i64 @foo64_1(i64) addrspace(1)
+declare i64 @foo64_2(i64, i64, i64) addrspace(1)
 
-define i8 @calli8_reg() {
+define i8 @calli8_reg() addrspace(1) {
 ; CHECK-LABEL: calli8_reg:
 ; CHECK: ldi r24, 12
 ; CHECK: call foo8_1
@@ -28,7 +28,7 @@ define i8 @calli8_reg() {
     ret i8 %result2
 }
 
-define i8 @calli8_stack() {
+define i8 @calli8_stack() addrspace(1) {
 ; CHECK-LABEL: calli8_stack:
 ; CHECK: ldi [[REG1:r[0-9]+]], 10
 ; CHECK: push [[REG1]]
@@ -39,7 +39,7 @@ define i8 @calli8_stack() {
     ret i8 %result1
 }
 
-define i16 @calli16_reg() {
+define i16 @calli16_reg() addrspace(1) {
 ; CHECK-LABEL: calli16_reg:
 ; CHECK: ldi r24, 1
 ; CHECK: ldi r25, 2
@@ -50,7 +50,7 @@ define i16 @calli16_reg() {
     ret i16 %result1
 }
 
-define i16 @calli16_stack() {
+define i16 @calli16_stack() addrspace(1) {
 ; CHECK-LABEL: calli16_stack:
 ; CHECK: ldi [[REG1:r[0-9]+]], 9
 ; CHECK: ldi [[REG2:r[0-9]+]], 2 
@@ -65,7 +65,7 @@ define i16 @calli16_stack() {
     ret i16 %result1
 }
 
-define i32 @calli32_reg() {
+define i32 @calli32_reg() addrspace(1) {
 ; CHECK-LABEL: calli32_reg:
 ; CHECK: ldi r22, 64
 ; CHECK: ldi r23, 66
@@ -80,7 +80,7 @@ define i32 @calli32_reg() {
     ret i32 %result1
 }
 
-define i32 @calli32_stack() {
+define i32 @calli32_stack() addrspace(1) {
 ; CHECK-LABEL: calli32_stack:
 ; CHECK: ldi [[REG1:r[0-9]+]], 64
 ; CHECK: ldi [[REG2:r[0-9]+]], 66
@@ -95,7 +95,7 @@ define i32 @calli32_stack() {
     ret i32 %result1
 }
 
-define i64 @calli64_reg() {
+define i64 @calli64_reg() addrspace(1) {
 ; CHECK-LABEL: calli64_reg:
 ; CHECK: ldi r18, 255
 ; CHECK: ldi r19, 255
@@ -110,7 +110,7 @@ define i64 @calli64_reg() {
     ret i64 %result1
 }
 
-define i64 @calli64_stack() {
+define i64 @calli64_stack() addrspace(1) {
 ; CHECK-LABEL: calli64_stack:
 
 ; CHECK: ldi [[REG1:r[0-9]+]], 76
@@ -136,9 +136,9 @@ define i64 @calli64_stack() {
 
 ; Test passing arguments through the stack when the call frame is allocated
 ; in the prologue.
-declare void @foo64_3(i64, i64, i64, i8, i16*)
+declare void @foo64_3(i64, i64, i64, i8, i16*) addrspace(1)
 
-define void @testcallprologue() {
+define void @testcallprologue() addrspace(1) {
 ; CHECK-LABEL: testcallprologue:
 ; CHECK: push r28
 ; CHECK: push r29
@@ -169,7 +169,7 @@ define void @testcallprologue() {
   ret void
 }
 
-define i32 @icall(i32 (i32)* %foo) {
+define i32 @icall(i32 (i32)* %foo) addrspace(1) {
 ; CHECK-LABEL: icall:
 ; CHECK: movw [[REG:r[0-9]+]], r24
 ; CHECK: ldi r22, 147
@@ -189,9 +189,9 @@ define i32 @icall(i32 (i32)* %foo) {
 
 ; Calling external functions (like __divsf3) require extra processing for
 ; arguments and return values in the LowerCall function.
-declare i32 @foofloat(float)
+declare i32 @foofloat(float) addrspace(1)
 
-define i32 @externcall(float %a, float %b) {
+define i32 @externcall(float %a, float %b) addrspace(1) {
 ; CHECK-LABEL: externcall:
 ; CHECK: movw [[REG1:(r[0-9]+|[XYZ])]], r24
 ; CHECK: movw [[REG2:(r[0-9]+|[XYZ])]], r22

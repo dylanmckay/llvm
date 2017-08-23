@@ -2,7 +2,7 @@
 
 ; Unit test for: PR 31345
 
-define i16 @and16_reg_imm_0xff00(i16 %a) {
+define i16 @and16_reg_imm_0xff00(i16 %a) addrspace(1) {
 ; CHECK-LABEL: and16_reg_imm_0xff00
 ; CHECK: andi {{r[0-9]+}}, 0
 ; CHECK-NOT: andi {{r[0-9]+}}, 255
@@ -10,7 +10,7 @@ define i16 @and16_reg_imm_0xff00(i16 %a) {
     ret i16 %result
 }
 
-define i16 @and16_reg_imm_0xffb3(i16 %a) {
+define i16 @and16_reg_imm_0xffb3(i16 %a) addrspace(1) {
 ; CHECK-LABEL: and16_reg_imm_0xffb3
 ; CHECK: andi {{r[0-9]+}}, 179
 ; CHECK-NOT: andi {{r[0-9]+}}, 255
@@ -18,7 +18,7 @@ define i16 @and16_reg_imm_0xffb3(i16 %a) {
     ret i16 %result
 }
 
-define i16 @and16_reg_imm_0x00ff(i16 %a) {
+define i16 @and16_reg_imm_0x00ff(i16 %a) addrspace(1) {
 ; CHECK-LABEL: and16_reg_imm_0x00ff
 ; CHECK-NOT: andi {{r[0-9]+}}, 255
 ; CHECK: andi {{r[0-9]+}}, 0
@@ -26,7 +26,7 @@ define i16 @and16_reg_imm_0x00ff(i16 %a) {
     ret i16 %result
 }
 
-define i16 @and16_reg_imm_0xb3ff(i16 %a) {
+define i16 @and16_reg_imm_0xb3ff(i16 %a) addrspace(1) {
 ; CHECK-LABEL: and16_reg_imm_0xb3ff
 ; CHECK-NOT: andi {{r[0-9]+}}, 255
 ; CHECK: andi {{r[0-9]+}}, 179
@@ -34,7 +34,7 @@ define i16 @and16_reg_imm_0xb3ff(i16 %a) {
     ret i16 %result
 }
 
-define i16 @and16_reg_imm_0xffff(i16 %a) {
+define i16 @and16_reg_imm_0xffff(i16 %a) addrspace(1) {
 ; CHECK-LABEL: and16_reg_imm_0xffff
 ; CHECK-NOT: andi {{r[0-9]+}}, 255
 ; CHECK-NOT: andi {{r[0-9]+}}, 255
@@ -42,7 +42,7 @@ define i16 @and16_reg_imm_0xffff(i16 %a) {
     ret i16 %result
 }
 
-define i16 @and16_reg_imm_0xabcd(i16 %a) {
+define i16 @and16_reg_imm_0xabcd(i16 %a) addrspace(1) {
 ; CHECK-LABEL: and16_reg_imm_0xabcd
 ; CHECK: andi {{r[0-9]+}}, 205
 ; CHECK: andi {{r[0-9]+}}, 171

@@ -8,7 +8,7 @@
 ; file lib/CodeGen/SelectionDAG/LegalizeTypes.cpp
 
 ; CHECK-LABEL: foo
-define void @foo(i16 %a) {
+define void @foo(i16 %a) addrspace(1) {
 ifcont:
   %cmp_result = icmp eq i16 %a, 255
   %bool_result = uitofp i1 %cmp_result to double

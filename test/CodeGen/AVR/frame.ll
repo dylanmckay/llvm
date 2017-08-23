@@ -1,11 +1,11 @@
 ; RUN: llc -mattr=mul < %s -march=avr | FileCheck %s
 
-declare float @dsin(float)
-declare float @dcos(float)
-declare float @dasin(float)
+declare float @dsin(float) addrspace(1)
+declare float @dcos(float) addrspace(1)
+declare float @dasin(float) addrspace(1)
 
 ; Test prologue and epilogue insertion
-define float @f3(float %days) {
+define float @f3(float %days) addrspace(1) {
 entry:
 ; CHECK-LABEL: f3:
 ; prologue code:

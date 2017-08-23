@@ -6,7 +6,7 @@
 ; CHECK: rjmp    LBB0_2
 ; LBB0_1:
 
-define i8 @relax_breq(i1 %a) {
+define i8 @relax_breq(i1 %a) addrspace(1) {
 entry-block:
   br i1 %a, label %hello, label %finished
 
@@ -72,7 +72,7 @@ finished:
 ; CHECK: nop
 ; ...
 ; LBB0_1:
-define i8 @no_relax_breq(i1 %a) {
+define i8 @no_relax_breq(i1 %a) addrspace(1) {
 entry-block:
   br i1 %a, label %hello, label %finished
 

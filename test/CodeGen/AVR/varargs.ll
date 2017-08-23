@@ -1,10 +1,10 @@
 ; RUN: llc -mattr=sram,movw,addsubiw < %s -march=avr | FileCheck %s
 
-declare void @llvm.va_start(i8*)
-declare i16 @vsprintf(i8* nocapture, i8* nocapture, i8*)
-declare void @llvm.va_end(i8*)
+declare void @llvm.va_start(i8*) addrspace(1)
+declare i16 @vsprintf(i8* nocapture, i8* nocapture, i8*) addrspace(1)
+declare void @llvm.va_end(i8*) addrspace(1)
 
-define i16 @varargs1(i8* nocapture %x, ...) {
+define i16 @varargs1(i8* nocapture %x, ...) addrspace(1) {
 ; CHECK-LABEL: varargs1:
 ; CHECK: movw r20, r28
 ; CHECK: subi r20, 217
@@ -25,7 +25,7 @@ define i16 @varargs1(i8* nocapture %x, ...) {
   ret i16 0
 }
 
-define i16 @varargs2(i8* nocapture %x, ...) {
+define i16 @varargs2(i8* nocapture %x, ...) addrspace(1) {
 ; CHECK-LABEL: varargs2:
 ; CHECK: ld r24, Z
 ; CHECK: ldd r25, Z+1
@@ -37,8 +37,8 @@ define i16 @varargs2(i8* nocapture %x, ...) {
   ret i16 %1
 }
 
-declare void @var1223(i16, ...)
-define void @varargcall() {
+declare void @var1223(i16, ...) addrspace(1)
+define void @varargcall() addrspace(1) {
 ; CHECK-LABEL: varargcall:
 ; CHECK: ldi [[REG1:r[0-9]+]], 189
 ; CHECK: ldi [[REG2:r[0-9]+]], 205

@@ -7,21 +7,21 @@
 ; CHECK-NEXT: cli
 ; CHECK-NEXT: ld [[RR:r[0-9]+]], [[RD:(X|Y|Z)]]
 ; CHECK-NEXT: out 63, r0
-define i8 @atomic_load8(i8* %foo) {
+define i8 @atomic_load8(i8* %foo) addrspace(1) {
   %val = load atomic i8, i8* %foo unordered, align 1
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_swap8
 ; CHECK: call __sync_lock_test_and_set_1
-define i8 @atomic_load_swap8(i8* %foo) {
+define i8 @atomic_load_swap8(i8* %foo) addrspace(1) {
   %val = atomicrmw xchg i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_cmp_swap8
 ; CHECK: call __sync_val_compare_and_swap_1
-define i8 @atomic_load_cmp_swap8(i8* %foo) {
+define i8 @atomic_load_cmp_swap8(i8* %foo) addrspace(1) {
   %val = cmpxchg i8* %foo, i8 5, i8 10 acq_rel monotonic
   %value_loaded = extractvalue { i8, i1 } %val, 0
   ret i8 %value_loaded
@@ -34,7 +34,7 @@ define i8 @atomic_load_cmp_swap8(i8* %foo) {
 ; CHECK-NEXT: add [[RD]], [[RR1:r[0-9]+]]
 ; CHECK-NEXT: st [[RR]], [[RD]]
 ; CHECK-NEXT: out 63, r0
-define i8 @atomic_load_add8(i8* %foo) {
+define i8 @atomic_load_add8(i8* %foo) addrspace(1) {
   %val = atomicrmw add i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
@@ -46,7 +46,7 @@ define i8 @atomic_load_add8(i8* %foo) {
 ; CHECK-NEXT: sub [[RD]], [[RR1:r[0-9]+]]
 ; CHECK-NEXT: st [[RR]], [[RD]]
 ; CHECK-NEXT: out 63, r0
-define i8 @atomic_load_sub8(i8* %foo) {
+define i8 @atomic_load_sub8(i8* %foo) addrspace(1) {
   %val = atomicrmw sub i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
@@ -58,7 +58,7 @@ define i8 @atomic_load_sub8(i8* %foo) {
 ; CHECK-NEXT: and [[RD]], [[RR1:r[0-9]+]]
 ; CHECK-NEXT: st [[RR]], [[RD]]
 ; CHECK-NEXT: out 63, r0
-define i8 @atomic_load_and8(i8* %foo) {
+define i8 @atomic_load_and8(i8* %foo) addrspace(1) {
   %val = atomicrmw and i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
@@ -70,7 +70,7 @@ define i8 @atomic_load_and8(i8* %foo) {
 ; CHECK-NEXT: or [[RD]], [[RR1:r[0-9]+]]
 ; CHECK-NEXT: st [[RR]], [[RD]]
 ; CHECK-NEXT: out 63, r0
-define i8 @atomic_load_or8(i8* %foo) {
+define i8 @atomic_load_or8(i8* %foo) addrspace(1) {
   %val = atomicrmw or i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
@@ -82,42 +82,42 @@ define i8 @atomic_load_or8(i8* %foo) {
 ; CHECK-NEXT: eor [[RD]], [[RR1:r[0-9]+]]
 ; CHECK-NEXT: st [[RR]], [[RD]]
 ; CHECK-NEXT: out 63, r0
-define i8 @atomic_load_xor8(i8* %foo) {
+define i8 @atomic_load_xor8(i8* %foo) addrspace(1) {
   %val = atomicrmw xor i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_nand8
 ; CHECK: call __sync_fetch_and_nand_1
-define i8 @atomic_load_nand8(i8* %foo) {
+define i8 @atomic_load_nand8(i8* %foo) addrspace(1) {
   %val = atomicrmw nand i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_max8
 ; CHECK: call __sync_fetch_and_max_1
-define i8 @atomic_load_max8(i8* %foo) {
+define i8 @atomic_load_max8(i8* %foo) addrspace(1) {
   %val = atomicrmw max i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_min8
 ; CHECK: call __sync_fetch_and_min_1
-define i8 @atomic_load_min8(i8* %foo) {
+define i8 @atomic_load_min8(i8* %foo) addrspace(1) {
   %val = atomicrmw min i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_umax8
 ; CHECK: call __sync_fetch_and_umax_1
-define i8 @atomic_load_umax8(i8* %foo) {
+define i8 @atomic_load_umax8(i8* %foo) addrspace(1) {
   %val = atomicrmw umax i8* %foo, i8 13 seq_cst
   ret i8 %val
 }
 
 ; CHECK-LABEL: atomic_load_umin8
 ; CHECK: call __sync_fetch_and_umin_1
-define i8 @atomic_load_umin8(i8* %foo) {
+define i8 @atomic_load_umin8(i8* %foo) addrspace(1) {
   %val = atomicrmw umin i8* %foo, i8 13 seq_cst
   ret i8 %val
 }

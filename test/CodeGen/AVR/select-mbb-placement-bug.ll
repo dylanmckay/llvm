@@ -1,7 +1,7 @@
 ; RUN: llc -mcpu=atmega328p < %s -march=avr | FileCheck %s
 
 ; CHECK-LABEL: loopy
-define internal fastcc void @loopy() {
+define internal fastcc void @loopy() addrspace(1) {
 
 ; In this case, when we expand `Select8`/`Select16`, we should be
 ; replacing the existing MBB instead of adding a new one.
@@ -31,5 +31,5 @@ bb10:                                             ; preds = %bb7.preheader
 
 }
 
-declare void @observe(i8, i8);
+declare void @observe(i8, i8); addrspace(1)
 

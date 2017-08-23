@@ -3,7 +3,7 @@
 ; Bit rotation tests.
 
 ; CHECK-LABEL: rol8:
-define i8 @rol8(i8 %val, i8 %amt) {
+define i8 @rol8(i8 %val, i8 %amt) addrspace(1) {
   ; CHECK:      andi r22, 7
 
   ; CHECK-NEXT: cpi r22, 0
@@ -29,7 +29,7 @@ define i8 @rol8(i8 %val, i8 %amt) {
 
 
 ; CHECK-LABEL: ror8:
-define i8 @ror8(i8 %val, i8 %amt) {
+define i8 @ror8(i8 %val, i8 %amt) addrspace(1) {
   ; CHECK:      andi r22, 7
 
   ; CHECK-NEXT: cpi r22, 0

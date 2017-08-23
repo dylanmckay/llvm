@@ -1,13 +1,13 @@
 ; RUN: llc -mattr=avr6,sram < %s -march=avr | FileCheck %s
 
-define void @store8(i8* %x, i8 %y) {
+define void @store8(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: store8:
 ; CHECK: st {{[XYZ]}}, r22
   store i8 %y, i8* %x
   ret void
 }
 
-define void @store16(i16* %x, i16 %y) {
+define void @store16(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: store16:
 ; CHECK: st {{[YZ]}}, r22
 ; CHECK: std {{[YZ]}}+1, r23
@@ -15,7 +15,7 @@ define void @store16(i16* %x, i16 %y) {
   ret void
 }
 
-define void @store8disp(i8* %x, i8 %y) {
+define void @store8disp(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: store8disp:
 ; CHECK: std {{[YZ]}}+63, r22
   %arrayidx = getelementptr inbounds i8, i8* %x, i16 63
@@ -23,7 +23,7 @@ define void @store8disp(i8* %x, i8 %y) {
   ret void
 }
 
-define void @store8nodisp(i8* %x, i8 %y) {
+define void @store8nodisp(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: store8nodisp:
 ; CHECK: movw r26, r24
 ; CHECK: subi r26, 192
@@ -34,7 +34,7 @@ define void @store8nodisp(i8* %x, i8 %y) {
   ret void
 }
 
-define void @store16disp(i16* %x, i16 %y) {
+define void @store16disp(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: store16disp:
 ; CHECK: std {{[YZ]}}+62, r22
 ; CHECK: std {{[YZ]}}+63, r23
@@ -43,7 +43,7 @@ define void @store16disp(i16* %x, i16 %y) {
   ret void
 }
 
-define void @store16nodisp(i16* %x, i16 %y) {
+define void @store16nodisp(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: store16nodisp:
 ; CHECK: movw r30, r24
 ; CHECK: subi r30, 192
@@ -55,7 +55,7 @@ define void @store16nodisp(i16* %x, i16 %y) {
   ret void
 }
 
-define void @store8postinc(i8* %x, i8 %y) {
+define void @store8postinc(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: store8postinc:
 ; CHECK: st {{[XYZ]}}+, {{.*}}
 entry:
@@ -73,7 +73,7 @@ while.end:                                        ; preds = %while.body, %entry
   ret void
 }
 
-define void @store16postinc(i16* %x, i16 %y) {
+define void @store16postinc(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: store16postinc:
 ; CHECK: st {{[XYZ]}}+, {{.*}}
 ; CHECK: st {{[XYZ]}}+, {{.*}}
@@ -92,7 +92,7 @@ while.end:                                        ; preds = %while.body, %entry
   ret void
 }
 
-define void @store8predec(i8* %x, i8 %y) {
+define void @store8predec(i8* %x, i8 %y) addrspace(1) {
 ; CHECK-LABEL: store8predec:
 ; CHECK: st -{{[XYZ]}}, {{.*}}
 entry:
@@ -110,7 +110,7 @@ while.end:                                        ; preds = %while.body, %entry
   ret void
 }
 
-define void @store16predec(i16* %x, i16 %y) {
+define void @store16predec(i16* %x, i16 %y) addrspace(1) {
 ; CHECK-LABEL: store16predec:
 ; CHECK: st -{{[XYZ]}}, {{.*}}
 ; CHECK: st -{{[XYZ]}}, {{.*}}

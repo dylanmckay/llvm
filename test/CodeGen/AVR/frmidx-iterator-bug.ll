@@ -4,12 +4,12 @@
 %Machine = type { i16, [0 x i8], i16, [0 x i8], [16 x i8], [0 x i8] }
 
 ; CHECK-LABEL: step
-define void @step(%Machine*) {
+define void @step(%Machine*) addrspace(1) {
  ret void
 }
 
 ; CHECK-LABEL: main
-define void @main() {
+define void @main() addrspace(1) {
 start:
   %machine = alloca %Machine, align 8
   %v0 = bitcast %Machine* %machine to i8*

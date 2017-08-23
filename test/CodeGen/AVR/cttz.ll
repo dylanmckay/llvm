@@ -1,12 +1,12 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-define i8 @count_trailing_zeros(i8) unnamed_addr {
+define i8 @count_trailing_zeros(i8) addrspace(1) {
 entry-block:
   %1 = tail call i8 @llvm.cttz.i8(i8 %0)
   ret i8 %1
 }
 
-declare i8 @llvm.cttz.i8(i8)
+declare i8 @llvm.cttz.i8(i8) addrspace(1)
 
 ; CHECK-LABEL: count_trailing_zeros:
 ; CHECK: cpi    [[RESULT:r[0-9]+]], 0

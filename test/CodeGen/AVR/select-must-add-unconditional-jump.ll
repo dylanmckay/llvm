@@ -22,7 +22,7 @@
 ; it's actually BB#3! To be proper, there should be an unconditional
 ; jump tying this block to BB#5.
 
-define i8 @select_must_add_unconditional_jump(i8 %arg0, i8 %arg1) unnamed_addr {
+define i8 @select_must_add_unconditional_jump(i8 %arg0, i8 %arg1) addrspace(1) {
 entry-block:
   switch i8 %arg0, label %dead [
     i8 0, label %zero

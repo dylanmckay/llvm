@@ -1,7 +1,7 @@
 ; RUN: llc -mattr=mul,movw < %s -march=avr | FileCheck %s
 
 ; Unsigned 8-bit division
-define i8 @udiv8(i8 %a, i8 %b) {
+define i8 @udiv8(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: div8:
 ; CHECK: call __udivmodqi4
 ; CHECK-NEXT: ret
@@ -11,7 +11,7 @@ define i8 @udiv8(i8 %a, i8 %b) {
 }
 
 ; Signed 8-bit division
-define i8 @sdiv8(i8 %a, i8 %b) {
+define i8 @sdiv8(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: sdiv8:
 ; CHECK: call __divmodqi4
 ; CHECK-NEXT: ret
@@ -21,7 +21,7 @@ define i8 @sdiv8(i8 %a, i8 %b) {
 }
 
 ; Unsigned 16-bit division
-define i16 @udiv16(i16 %a, i16 %b) {
+define i16 @udiv16(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: udiv16:
 ; CHECK: call __udivmodhi4
 ; CHECK-NEXT: movw r24, r22
@@ -31,7 +31,7 @@ define i16 @udiv16(i16 %a, i16 %b) {
 }
 
 ; Signed 16-bit division
-define i16 @sdiv16(i16 %a, i16 %b) {
+define i16 @sdiv16(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: sdiv16:
 ; CHECK: call __divmodhi4
 ; CHECK-NEXT: movw r24, r22
@@ -41,7 +41,7 @@ define i16 @sdiv16(i16 %a, i16 %b) {
 }
 
 ; Unsigned 32-bit division
-define i32 @udiv32(i32 %a, i32 %b) {
+define i32 @udiv32(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: udiv32:
 ; CHECK: call __udivmodsi4
 ; CHECK-NEXT: movw r22, r18
@@ -52,7 +52,7 @@ define i32 @udiv32(i32 %a, i32 %b) {
 }
 
 ; Signed 32-bit division
-define i32 @sdiv32(i32 %a, i32 %b) {
+define i32 @sdiv32(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: sdiv32:
 ; CHECK: call __divmodsi4
 ; CHECK-NEXT: movw r22, r18

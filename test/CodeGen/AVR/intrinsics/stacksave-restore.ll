@@ -1,7 +1,7 @@
 ; RUN: llc -O0 < %s -march=avr | FileCheck %s
 
 ; CHECK-LABEL: foo
-define void @foo() {
+define void @foo() addrspace(1) {
 entry:
   br label %save
 
@@ -23,5 +23,5 @@ restore:
   ret void
 }
 
-declare i8* @llvm.stacksave()
-declare void @llvm.stackrestore(i8* %ptr)
+declare i8* @llvm.stacksave() addrspace(1)
+declare void @llvm.stackrestore(i8* %ptr) addrspace(1)

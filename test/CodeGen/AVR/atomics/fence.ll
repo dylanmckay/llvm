@@ -6,7 +6,7 @@
 ; CHECK_LABEL: atomic_fence8
 ; CHECK:      ; BB#0:
 ; CHECK-NEXT:   ret
-define void @atomic_fence8() {
+define void @atomic_fence8() addrspace(1) {
   fence acquire
   ret void
 }

@@ -6,7 +6,7 @@ target datalayout = "e-p:16:16:16-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32
 
 %MyType = type { i8, [0 x i8], [0 x i8] }
 
-define i8 @foo(i8 %arg) {
+define i8 @foo(i8 %arg) addrspace(1) {
 start:
   %_0 = alloca %MyType
 

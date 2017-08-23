@@ -1,13 +1,13 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-define i8 @xor8_reg_reg(i8 %a, i8 %b) {
+define i8 @xor8_reg_reg(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: xor8_reg_reg:
 ; CHECK: eor r24, r22
     %result = xor i8 %a, %b
     ret i8 %result
 }
 
-define i16 @xor16_reg_reg(i16 %a, i16 %b) {
+define i16 @xor16_reg_reg(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: xor16_reg_reg:
 ; CHECK: eor r24, r22
 ; CHECK: eor r25, r23
@@ -15,7 +15,7 @@ define i16 @xor16_reg_reg(i16 %a, i16 %b) {
     ret i16 %result
 }
 
-define i32 @xor32_reg_reg(i32 %a, i32 %b) {
+define i32 @xor32_reg_reg(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: xor32_reg_reg:
 ; CHECK: eor r22, r18
 ; CHECK: eor r23, r19
@@ -25,7 +25,7 @@ define i32 @xor32_reg_reg(i32 %a, i32 %b) {
     ret i32 %result
 }
 
-define i64 @xor64_reg_reg(i64 %a, i64 %b) {
+define i64 @xor64_reg_reg(i64 %a, i64 %b) addrspace(1) {
 ; CHECK-LABEL: xor64_reg_reg:
 ; CHECK: eor r18, r10
 ; CHECK: eor r19, r11

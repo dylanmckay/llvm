@@ -1,8 +1,8 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-declare void @f1(i8)
-declare void @f2(i8)
-define void @cmp8(i8 %a, i8 %b) {
+declare void @f1(i8) addrspace(1)
+declare void @f2(i8) addrspace(1)
+define void @cmp8(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: cmp8:
 ; CHECK: cp
 ; CHECK-NOT: cpc
@@ -18,9 +18,9 @@ if.end:
   ret void
 }
 
-declare void @f3(i16)
-declare void @f4(i16)
-define void @cmp16(i16 %a, i16 %b) {
+declare void @f3(i16) addrspace(1)
+declare void @f4(i16) addrspace(1)
+define void @cmp16(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: cmp16:
 ; CHECK: cp
 ; CHECK-NEXT: cpc
@@ -36,9 +36,9 @@ if.end:
   ret void
 }
 
-declare void @f5(i32)
-declare void @f6(i32)
-define void @cmp32(i32 %a, i32 %b) {
+declare void @f5(i32) addrspace(1)
+declare void @f6(i32) addrspace(1)
+define void @cmp32(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: cmp32:
 ; CHECK: cp
 ; CHECK-NEXT: cpc
@@ -56,9 +56,9 @@ if.end:
   ret void
 }
 
-declare void @f7(i64)
-declare void @f8(i64)
-define void @cmp64(i64 %a, i64 %b) {
+declare void @f7(i64) addrspace(1)
+declare void @f8(i64) addrspace(1)
+define void @cmp64(i64 %a, i64 %b) addrspace(1) {
 ; CHECK-LABEL: cmp64:
 ; CHECK: cp
 ; CHECK-NEXT: cpc
@@ -80,10 +80,10 @@ if.end:
   ret void
 }
 
-declare void @f9()
-declare void @f10()
+declare void @f9() addrspace(1)
+declare void @f10() addrspace(1)
 
-define void @tst8(i8 %a) {
+define void @tst8(i8 %a) addrspace(1) {
 ; CHECK-LABEL: tst8:
 ; CHECK: tst r24
 ; CHECK-NEXT: brmi
@@ -99,7 +99,7 @@ if.end:
   ret void
 }
 
-define void @tst16(i16 %a) {
+define void @tst16(i16 %a) addrspace(1) {
 ; CHECK-LABEL: tst16:
 ; CHECK: tst r25
 ; CHECK-NEXT: brmi
@@ -115,7 +115,7 @@ if.end:
   ret void
 }
 
-define void @tst32(i32 %a) {
+define void @tst32(i32 %a) addrspace(1) {
 ; CHECK-LABEL: tst32:
 ; CHECK: tst r25
 ; CHECK-NEXT: brmi
@@ -131,7 +131,7 @@ if.end:
   ret void
 }
 
-define void @tst64(i64 %a) {
+define void @tst64(i64 %a) addrspace(1) {
 ; CHECK-LABEL: tst64:
 ; CHECK: tst r25
 ; CHECK-NEXT: brmi

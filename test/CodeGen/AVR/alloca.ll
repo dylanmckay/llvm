@@ -1,9 +1,9 @@
 ; RUN: llc < %s -march=avr -mattr=avr6 | FileCheck %s
 
-declare i16 @allocate(i16*, i16*)
+declare i16 @allocate(i16*, i16*) addrspace(1)
 
 ; Test taking an address of an alloca with a small offset (adiw)
-define i16 @alloca_addressof_small() {
+define i16 @alloca_addressof_small() addrspace(1) {
 entry:
 ; CHECK-LABEL: alloca_addressof_small:
 ; Test that Y is saved
@@ -25,7 +25,7 @@ entry:
 }
 
 ; Test taking an address of an alloca with a big offset (subi/sbci pair)
-define i16 @alloca_addressof_big() {
+define i16 @alloca_addressof_big() addrspace(1) {
 entry:
 ; CHECK-LABEL: alloca_addressof_big:
 ; CHECK: movw r24, r28
@@ -42,7 +42,7 @@ entry:
 }
 
 ; Test writing to an allocated variable with a small and a big offset
-define i16 @alloca_write(i16 %x) {
+define i16 @alloca_write(i16 %x) addrspace(1) {
 entry:
 ; CHECK-LABEL: alloca_write:
 ; Small offset here
@@ -67,7 +67,7 @@ entry:
 
 ; Test writing to an allocated variable with a huge offset that cant be
 ; materialized with adiw/sbiw but with a subi/sbci pair.
-define void @alloca_write_huge() {
+define void @alloca_write_huge() addrspace(1) {
 ; CHECK-LABEL: alloca_write_huge:
 ; CHECK: subi r28, 41
 ; CHECK: sbci r29, 255

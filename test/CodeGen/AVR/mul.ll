@@ -1,6 +1,6 @@
 ; RUN: llc -mattr=mul,movw < %s -march=avr | FileCheck %s
 
-define i8 @mult8(i8 %a, i8 %b) {
+define i8 @mult8(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: mult8:
 ; CHECK: muls r22, r24
 ; CHECK: eor  r1, r1
@@ -9,7 +9,7 @@ define i8 @mult8(i8 %a, i8 %b) {
   ret i8 %mul
 }
 
-define i16 @mult16(i16 %a, i16 %b) {
+define i16 @mult16(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: mult16:
 ; CHECK: muls r22, r25
 ; CHECK: mov  r18, r0

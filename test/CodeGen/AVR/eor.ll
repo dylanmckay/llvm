@@ -2,14 +2,14 @@
 
 ; Tests for the exclusive OR operation.
 
-define i8 @eor8_reg_reg(i8 %a, i8 %b) {
+define i8 @eor8_reg_reg(i8 %a, i8 %b) addrspace(1) {
 ; CHECK-LABEL: eor8_reg_reg:
 ; CHECK: eor r24, r22
     %result = xor i8 %a, %b
     ret i8 %result
 }
 
-define i8 @eor8_reg_imm(i8 %a) {
+define i8 @eor8_reg_imm(i8 %a) addrspace(1) {
 ; CHECK-LABEL: eor8_reg_imm:
 ; CHECK: ldi r25, 5
 ; CHECK: eor r24, r25
@@ -17,7 +17,7 @@ define i8 @eor8_reg_imm(i8 %a) {
     ret i8 %result
 }
 
-define i16 @eor16_reg_reg(i16 %a, i16 %b) {
+define i16 @eor16_reg_reg(i16 %a, i16 %b) addrspace(1) {
 ; CHECK-LABEL: eor16_reg_reg:
 ; CHECK: eor r24, r22
 ; CHECK: eor r25, r23
@@ -25,7 +25,7 @@ define i16 @eor16_reg_reg(i16 %a, i16 %b) {
     ret i16 %result
 }
 
-define i16 @eor16_reg_imm(i16 %a) {
+define i16 @eor16_reg_imm(i16 %a) addrspace(1) {
 ; CHECK-LABEL: eor16_reg_imm:
 ; CHECK: ldi r18, 210
 ; CHECK: ldi r19, 4
@@ -35,7 +35,7 @@ define i16 @eor16_reg_imm(i16 %a) {
     ret i16 %result
 }
 
-define i32 @eor32_reg_reg(i32 %a, i32 %b) {
+define i32 @eor32_reg_reg(i32 %a, i32 %b) addrspace(1) {
 ; CHECK-LABEL: eor32_reg_reg:
 ; CHECK: eor r22, r18
 ; CHECK: eor r23, r19
@@ -45,7 +45,7 @@ define i32 @eor32_reg_reg(i32 %a, i32 %b) {
     ret i32 %result
 }
 
-define i32 @eor32_reg_imm(i32 %a) {
+define i32 @eor32_reg_imm(i32 %a) addrspace(1) {
 ; CHECK-LABEL: eor32_reg_imm:
 ; CHECK: ldi r18, 210
 ; CHECK: ldi r19, 4
@@ -55,7 +55,7 @@ define i32 @eor32_reg_imm(i32 %a) {
     ret i32 %result
 }
 
-define i64 @eor64_reg_reg(i64 %a, i64 %b) {
+define i64 @eor64_reg_reg(i64 %a, i64 %b) addrspace(1) {
 ; CHECK-LABEL: eor64_reg_reg:
 ; CHECK: eor r18, r10
 ; CHECK: eor r19, r11
@@ -69,7 +69,7 @@ define i64 @eor64_reg_reg(i64 %a, i64 %b) {
     ret i64 %result
 }
 
-define i64 @eor64_reg_imm(i64 %a) {
+define i64 @eor64_reg_imm(i64 %a) addrspace(1) {
 ; CHECK-LABEL: eor64_reg_imm:
 ; CHECK: ldi r30, 253
 ; CHECK: ldi r31, 255

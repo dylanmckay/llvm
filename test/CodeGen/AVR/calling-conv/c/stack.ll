@@ -1,7 +1,7 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
 ; CHECK-LABEL: ret_void_args_i64_i64_i32
-define void @ret_void_args_i64_i64_i32(i64 %a, i64 %b, i32 %c) {
+define void @ret_void_args_i64_i64_i32(i64 %a, i64 %b, i32 %c) addrspace(1) {
   ; We're goign to clobber PTRREG Y
   ; CHECK:      push    r28
   ; CHECK-NEXT: push    r29

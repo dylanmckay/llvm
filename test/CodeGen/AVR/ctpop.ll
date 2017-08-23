@@ -1,12 +1,12 @@
 ; RUN: llc < %s -march=avr | FileCheck %s
 
-define i8 @count_population(i8) unnamed_addr {
+define i8 @count_population(i8) addrspace(1) {
 entry-block:
   %1 = tail call i8 @llvm.ctpop.i8(i8 %0)
   ret i8 %1
 }
 
-declare i8 @llvm.ctpop.i8(i8)
+declare i8 @llvm.ctpop.i8(i8) addrspace(1)
 
 ; CHECK-LABEL: count_population:
 ; CHECK: mov    [[SCRATCH:r[0-9]+]], [[RESULT:r[0-9]+]]
