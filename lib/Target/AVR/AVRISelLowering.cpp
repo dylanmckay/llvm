@@ -23,6 +23,7 @@
 #include "llvm/CodeGen/TargetLoweringObjectFileImpl.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/MathExtras.h"
 
 #include "AVR.h"
 #include "AVRMachineFunctionInfo.h"
@@ -866,10 +867,10 @@ bool AVRTargetLowering::isOffsetFoldingLegal(
 
 /// For each argument in a function store the number of pieces it is composed
 /// of.
-static void parseFunctionArgs(const Function *F, const DataLayout *TD,
+static void parseFunctionArgs(const SmallVectorImpl<ISD::InputArg> &Ins,
                               SmallVectorImpl<unsigned> &Out) {
-  for (Argument const &Arg : F->args()) {
-    unsigned Bytes = (TD->getTypeSizeInBits(Arg.getType()) + 7) / 8;
+  for (const ISD::InputArg &Arg : Ins) {
+    unsigned Bytes = ((Arg.ArgVT.getSizeInBits()) + 7) / 8;
     Out.push_back((Bytes + 1) / 2);
   }
 }
@@ -937,13 +938,14 @@ static void analyzeStandardArguments(TargetLowering::CallLoweringInfo *CLI,
     parseExternFuncCallArgs(*Outs, Args);
   } else {
     assert(F != nullptr && "function should not be null");
-    parseFunctionArgs(F, TD, Args);
+    parseFunctionArgs(*Ins, Args);
   }
+  assert(Ins->size() == Args.size() && "not the right number of argument sizes");
 
   unsigned RegsLeft = array_lengthof(RegList8), ValNo = 0;
   // Variadic functions always use the stack.
   bool UsesStack = false;
-  for (unsigned i = 0, pos = 0, e = Args.size(); i != e; ++i) {
+  for (unsigned i = 0, e = Args.size(); i != e; ++i) {
     unsigned Size = Args[i];
 
     // If we have a zero-sized argument, don't attempt to lower it.
@@ -951,23 +953,26 @@ static void analyzeStandardArguments(TargetLowering::CallLoweringInfo *CLI,
     // worry about ABI compatibility.
     if (Size == 0) continue;
 
-    MVT LocVT = (IsCall) ? (*Outs)[pos].VT : (*Ins)[pos].VT;
+    MVT LocVT = (IsCall) ? (*Outs)[i].VT : (*Ins)[i].VT;
 
     // If we have plenty of regs to pass the whole argument do it.
     if (!UsesStack && (Size <= RegsLeft)) {
       const MCPhysReg *RegList = (LocVT == MVT::i16) ? RegList16 : RegList8;
+      unsigned RegSize = (LocVT == MVT::i16) ? 2 : 1;
 
-      for (unsigned j = 0; j != Size; ++j) {
-        unsigned Reg = CCInfo.AllocateReg(
-            ArrayRef<MCPhysReg>(RegList, array_lengthof(RegList8)));
+      unsigned RegsRequired = PowerOf2Ceil(Size / RegSize);
+      unsigned Reg = CCInfo.AllocateRegBlock(
+          ArrayRef<MCPhysReg>(RegList, array_lengthof(RegList8)), RegsRequired);
+      RegsLeft -= RegsRequired;
+
+      for (unsigned j=0; j<RegsRequired; ++j) {
         CCInfo.addLoc(
-            CCValAssign::getReg(ValNo++, LocVT, Reg, LocVT, CCValAssign::Full));
-        --RegsLeft;
+            CCValAssign::getReg(ValNo++, LocVT, Reg+j, LocVT, CCValAssign::Full));
       }
 
       // Reverse the order of the pieces to agree with the "big endian" format
       // required in the calling convention ABI.
-      std::reverse(ArgLocs.begin() + pos, ArgLocs.begin() + pos + Size);
+      std::reverse(ArgLocs.begin() + i, ArgLocs.begin() + i + Size);
     } else {
       // Pass the rest of arguments using the stack.
       UsesStack = true;
@@ -980,7 +985,6 @@ static void analyzeStandardArguments(TargetLowering::CallLoweringInfo *CLI,
                                           CCValAssign::Full));
       }
     }
-    pos += Size;
   }
 }
 
