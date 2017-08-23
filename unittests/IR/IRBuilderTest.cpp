@@ -30,7 +30,7 @@ protected:
     M.reset(new Module("MyModule", Ctx));
     FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx),
                                           /*isVarArg=*/false);
-    F = Function::Create(FTy, Function::ExternalLinkage, "", M.get());
+    F = Function::Create(FTy, Function::ExternalLinkage, "", *M.get());
     BB = BasicBlock::Create(Ctx, "", F);
     GV = new GlobalVariable(*M, Type::getFloatTy(Ctx), true,
                             GlobalValue::ExternalLinkage, nullptr);
@@ -231,13 +231,13 @@ TEST_F(IRBuilderTest, FastMathFlags) {
   auto CalleeTy = FunctionType::get(Type::getFloatTy(Ctx),
                                     /*isVarArg=*/false);
   auto Callee =
-      Function::Create(CalleeTy, Function::ExternalLinkage, "", M.get());
+      Function::Create(CalleeTy, Function::ExternalLinkage, "", *M.get());
 
   FCall = Builder.CreateCall(Callee, None);
   EXPECT_FALSE(FCall->hasNoNaNs());
 
   Value *V = 
-      Function::Create(CalleeTy, Function::ExternalLinkage, "", M.get());
+      Function::Create(CalleeTy, Function::ExternalLinkage, "", *M.get());
   FCall = Builder.CreateCall(V, None);
   EXPECT_FALSE(FCall->hasNoNaNs());
 
@@ -428,7 +428,7 @@ TEST_F(IRBuilderTest, DebugLoc) {
   auto CalleeTy = FunctionType::get(Type::getVoidTy(Ctx),
                                     /*isVarArg=*/false);
   auto Callee =
-      Function::Create(CalleeTy, Function::ExternalLinkage, "", M.get());
+      Function::Create(CalleeTy, Function::ExternalLinkage, "", *M.get());
 
   DIBuilder DIB(*M);
   auto File = DIB.createFile("tmp.cpp", "/");

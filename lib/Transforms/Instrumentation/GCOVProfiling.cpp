@@ -691,7 +691,7 @@ bool GCOVProfiler::emitProfileArcs() {
     // when "__gcov_flush" is called.
     FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
     Function *F = Function::Create(FTy, GlobalValue::InternalLinkage,
-                                   "__llvm_gcov_init", M);
+                                   "__llvm_gcov_init", *M);
     F->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
     F->setLinkage(GlobalValue::InternalLinkage);
     F->addFnAttr(Attribute::NoInline);
@@ -842,7 +842,7 @@ Function *GCOVProfiler::insertCounterWriteout(
   Function *WriteoutF = M->getFunction("__llvm_gcov_writeout");
   if (!WriteoutF)
     WriteoutF = Function::Create(WriteoutFTy, GlobalValue::InternalLinkage,
-                                 "__llvm_gcov_writeout", M);
+                                 "__llvm_gcov_writeout", *M);
   WriteoutF->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
   WriteoutF->addFnAttr(Attribute::NoInline);
   if (Options.NoRedZone)
@@ -957,7 +957,7 @@ insertFlush(ArrayRef<std::pair<GlobalVariable*, MDNode*> > CountersBySP) {
   Function *FlushF = M->getFunction("__llvm_gcov_flush");
   if (!FlushF)
     FlushF = Function::Create(FTy, GlobalValue::InternalLinkage,
-                              "__llvm_gcov_flush", M);
+                              "__llvm_gcov_flush", *M);
   else
     FlushF->setLinkage(GlobalValue::InternalLinkage);
   FlushF->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);

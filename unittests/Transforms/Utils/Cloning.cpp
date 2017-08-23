@@ -160,12 +160,14 @@ TEST_F(CloneInstruction, Attributes) {
   Type *ArgTy1[] = { Type::getInt32PtrTy(context) };
   FunctionType *FT1 =  FunctionType::get(Type::getVoidTy(context), ArgTy1, false);
 
-  Function *F1 = Function::Create(FT1, Function::ExternalLinkage);
+  Function *F1 = Function::Create(FT1, Function::ExternalLinkage,
+                                  /*AddrSpace=*/0);
   BasicBlock *BB = BasicBlock::Create(context, "", F1);
   IRBuilder<> Builder(BB);
   Builder.CreateRetVoid();
 
-  Function *F2 = Function::Create(FT1, Function::ExternalLinkage);
+  Function *F2 = Function::Create(FT1, Function::ExternalLinkage,
+                                  /*AddrSpace=*/0);
 
   Argument *A = &*F1->arg_begin();
   A->addAttr(Attribute::NoCapture);
@@ -185,13 +187,15 @@ TEST_F(CloneInstruction, CallingConvention) {
   Type *ArgTy1[] = { Type::getInt32PtrTy(context) };
   FunctionType *FT1 =  FunctionType::get(Type::getVoidTy(context), ArgTy1, false);
 
-  Function *F1 = Function::Create(FT1, Function::ExternalLinkage);
+  Function *F1 = Function::Create(FT1, Function::ExternalLinkage,
+                                  /*AddrSpace=*/0);
   F1->setCallingConv(CallingConv::Cold);
   BasicBlock *BB = BasicBlock::Create(context, "", F1);
   IRBuilder<> Builder(BB);
   Builder.CreateRetVoid();
 
-  Function *F2 = Function::Create(FT1, Function::ExternalLinkage);
+  Function *F2 = Function::Create(FT1, Function::ExternalLinkage,
+                                  /*AddrSpace=*/0);
 
   SmallVector<ReturnInst*, 4> Returns;
   ValueToValueMapTy VMap;
@@ -209,7 +213,8 @@ TEST_F(CloneInstruction, DuplicateInstructionsToSplit) {
   FunctionType *FT = FunctionType::get(Type::getVoidTy(context), ArgTy1, false);
   V = new Argument(Type::getInt32Ty(context));
 
-  Function *F = Function::Create(FT, Function::ExternalLinkage);
+  Function *F = Function::Create(FT, Function::ExternalLinkage,
+                                 /*AddrSpace=*/0);
 
   BasicBlock *BB1 = BasicBlock::Create(context, "", F);
   IRBuilder<> Builder1(BB1);
@@ -268,7 +273,7 @@ protected:
 
   void CreateOldFunc() {
     FunctionType* FuncType = FunctionType::get(Type::getVoidTy(C), false);
-    OldFunc = Function::Create(FuncType, GlobalValue::PrivateLinkage, "f", M);
+    OldFunc = Function::Create(FuncType, GlobalValue::PrivateLinkage, "f", *M);
     CreateOldFunctionBodyAndDI();
   }
 
@@ -486,9 +491,9 @@ protected:
 
     auto *FuncType = FunctionType::get(Type::getVoidTy(C), false);
     auto *PersFn = Function::Create(FuncType, GlobalValue::ExternalLinkage,
-                                    "persfn", OldM);
+                                    "persfn", *OldM);
     auto *F =
-        Function::Create(FuncType, GlobalValue::PrivateLinkage, "f", OldM);
+        Function::Create(FuncType, GlobalValue::PrivateLinkage, "f", *OldM);
     F->setPersonalityFn(PersFn);
     F->setComdat(CD);
 

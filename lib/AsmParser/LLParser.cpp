@@ -1162,7 +1162,8 @@ bool LLParser::ParseFnAttributeValuePairs(AttrBuilder &B,
 static inline GlobalValue *createGlobalFwdRef(Module *M, PointerType *PTy,
                                               const std::string &Name) {
   if (auto *FT = dyn_cast<FunctionType>(PTy->getElementType()))
-    return Function::Create(FT, GlobalValue::ExternalWeakLinkage, Name, M);
+    return Function::Create(FT, GlobalValue::ExternalWeakLinkage,
+                            PTy->getAddressSpace(), Name, M);
   else
     return new GlobalVariable(*M, PTy->getElementType(), false,
                               GlobalValue::ExternalWeakLinkage, nullptr, Name,
@@ -1195,6 +1196,17 @@ GlobalValue *LLParser::GetGlobalVal(const std::string &Name, Type *Ty,
 
   // If we have the value in the symbol table or fwd-ref table, return it.
   if (Val) {
+    // If we have two pointers that differ only by address space,
+    // we should still be able to resolve the value.
+    //
+    // For example, you always should be able to call a function by name
+    // without worrying about the address space it was declared with.
+    PointerType *ValPTy, *PTy;
+    if ((ValPTy = dyn_cast<PointerType>(Val->getType())) &&
+        (PTy = dyn_cast<PointerType>(Ty))) {
+      return Val;
+    }
+
     if (Val->getType() == Ty) return Val;
     Error(Loc, "'@" + Name + "' defined with type '" +
           getTypeString(Val->getType()) + "'");
@@ -4765,6 +4777,7 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
   std::string GC;
   GlobalValue::UnnamedAddr UnnamedAddr = GlobalValue::UnnamedAddr::None;
   LocTy UnnamedAddrLoc;
+  unsigned AddrSpace = 0;
   Constant *Prefix = nullptr;
   Constant *Prologue = nullptr;
   Constant *PersonalityFn = nullptr;
@@ -4772,6 +4785,7 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
 
   if (ParseArgumentList(ArgList, isVarArg) ||
       ParseOptionalUnnamedAddr(UnnamedAddr) ||
+      ParseOptionalAddrSpace(AddrSpace) ||
       ParseFnAttributeValuePairs(FuncAttrs, FwdRefAttrGrps, false,
                                  BuiltinLoc) ||
       (EatIfPresent(lltok::kw_section) &&
@@ -4855,7 +4869,8 @@ bool LLParser::ParseFunctionHeader(Function *&Fn, bool isDefine) {
   }
 
   if (!Fn)
-    Fn = Function::Create(FT, GlobalValue::ExternalLinkage, FunctionName, M);
+    Fn = Function::Create(FT, GlobalValue::ExternalLinkage, AddrSpace,
+                          FunctionName, M);
   else // Move the forward-reference to the correct spot in the module.
     M->getFunctionList().splice(M->end(), M->getFunctionList(), Fn);
 

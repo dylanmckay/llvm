@@ -215,7 +215,7 @@ static Function *createClone(Function &F, Twine Suffix, coro::Shape &Shape,
 
   Function *NewF =
       Function::Create(FnTy, GlobalValue::LinkageTypes::InternalLinkage,
-                       F.getName() + Suffix, M);
+                       F.getName() + Suffix, *M);
   NewF->addParamAttr(0, Attribute::NonNull);
   NewF->addParamAttr(0, Attribute::NoAlias);
 
@@ -661,7 +661,7 @@ static void createDevirtTriggerFunc(CallGraph &CG, CallGraphSCC &SCC) {
                                  /*IsVarArgs=*/false);
   Function *DevirtFn =
       Function::Create(FnTy, GlobalValue::LinkageTypes::PrivateLinkage,
-                       CORO_DEVIRT_TRIGGER_FN, &M);
+                       CORO_DEVIRT_TRIGGER_FN, M);
   DevirtFn->addFnAttr(Attribute::AlwaysInline);
   auto *Entry = BasicBlock::Create(C, "entry", DevirtFn);
   ReturnInst::Create(C, Entry);

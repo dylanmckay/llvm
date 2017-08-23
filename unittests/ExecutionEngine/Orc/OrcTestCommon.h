@@ -79,7 +79,7 @@ public:
   Function* createFunctionDecl(StringRef Name) {
     return Function::Create(
              TypeBuilder<FuncType, false>::get(M->getContext()),
-             GlobalValue::ExternalLinkage, Name, M.get());
+             GlobalValue::ExternalLinkage, Name, *M.get());
   }
 
   Module* getModule() { return M.get(); }

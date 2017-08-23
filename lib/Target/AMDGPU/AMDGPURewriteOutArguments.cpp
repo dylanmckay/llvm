@@ -360,9 +360,9 @@ bool AMDGPURewriteOutArguments::runOnFunction(Function &F) {
 
   DEBUG(dbgs() << "Computed new return type: " << *NewRetTy << '\n');
 
-  Function *NewFunc = Function::Create(NewFuncTy, Function::PrivateLinkage,
-                                       F.getName() + ".body");
-  F.getParent()->getFunctionList().insert(F.getIterator(), NewFunc);
+  Function *NewFunc = Function::CreateBefore(F, NewFuncTy,
+                                             Function::PrivateLinkage,
+                                             F.getName() + ".body");
   NewFunc->copyAttributesFrom(&F);
   NewFunc->setComdat(F.getComdat());
 

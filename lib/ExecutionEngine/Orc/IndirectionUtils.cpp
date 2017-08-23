@@ -179,7 +179,7 @@ Function* cloneFunctionDecl(Module &Dst, const Function &F,
   assert(F.getParent() != &Dst && "Can't copy decl over existing function.");
   Function *NewF =
     Function::Create(cast<FunctionType>(F.getValueType()),
-                     F.getLinkage(), F.getName(), &Dst);
+                     F.getLinkage(), F.getName(), Dst);
   NewF->copyAttributesFrom(&F);
 
   if (VMap) {

@@ -580,7 +580,7 @@ private:
         if (Ty->isFunctionTy())
           return Function::Create(cast<FunctionType>(Ty),
                                   GlobalValue::ExternalLinkage, A->getName(),
-                                  M.get());
+                                  *M.get());
 
         return new GlobalVariable(*M, Ty, false, GlobalValue::ExternalLinkage,
                                   nullptr, A->getName(), nullptr,

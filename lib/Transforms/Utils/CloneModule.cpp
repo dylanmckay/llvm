@@ -75,7 +75,8 @@ std::unique_ptr<Module> llvm::CloneModule(
   // Loop over the functions in the module, making external functions as before
   for (const Function &I : *M) {
     Function *NF = Function::Create(cast<FunctionType>(I.getValueType()),
-                                    I.getLinkage(), I.getName(), New.get());
+                                    I.getLinkage(), I.getAddressSpace(),
+                                    I.getName(), New.get());
     NF->copyAttributesFrom(&I);
     VMap[&I] = NF;
   }
@@ -91,7 +92,8 @@ std::unique_ptr<Module> llvm::CloneModule(
       GlobalValue *GV;
       if (I->getValueType()->isFunctionTy())
         GV = Function::Create(cast<FunctionType>(I->getValueType()),
-                              GlobalValue::ExternalLinkage, I->getName(),
+                              GlobalValue::ExternalLinkage,
+                              I->getAddressSpace(), I->getName(),
                               New.get());
       else
         GV = new GlobalVariable(

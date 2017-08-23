@@ -117,7 +117,7 @@ private:
   /// function is automatically inserted into the end of the function list for
   /// the module.
   ///
-  Function(FunctionType *Ty, LinkageTypes Linkage,
+  Function(FunctionType *Ty, LinkageTypes Linkage, unsigned AddrSpace,
            const Twine &N = "", Module *M = nullptr);
 
 public:
@@ -126,9 +126,20 @@ public:
   ~Function();
 
   static Function *Create(FunctionType *Ty, LinkageTypes Linkage,
-                          const Twine &N = "", Module *M = nullptr) {
-    return new Function(Ty, Linkage, N, M);
+                          unsigned AddrSpace, const Twine &N = "",
+                          Module *M = nullptr) {
+    return new Function(Ty, Linkage, AddrSpace, N, M);
   }
+
+  /// Creates a new function and attaches it to a module.
+  ///
+  /// Places the function in the program address space as specified
+  /// by the module's data layout.
+  static Function *Create(FunctionType *Ty, LinkageTypes Linkage,
+                          const Twine &N, Module &M);
+
+  static Function *CreateBefore(Function &InsertBefore, FunctionType *Ty,
+                                LinkageTypes Linkage, const Twine &N = "");
 
   // Provide fast operand accessors.
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);

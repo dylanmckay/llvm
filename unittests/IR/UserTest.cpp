@@ -123,9 +123,9 @@ TEST(UserTest, PersonalityUser) {
   Module M("", Context);
   FunctionType *RetVoidTy = FunctionType::get(Type::getVoidTy(Context), false);
   Function *PersonalityF = Function::Create(
-      RetVoidTy, GlobalValue::ExternalLinkage, "PersonalityFn", &M);
+      RetVoidTy, GlobalValue::ExternalLinkage, "PersonalityFn", M);
   Function *TestF =
-      Function::Create(RetVoidTy, GlobalValue::ExternalLinkage, "TestFn", &M);
+      Function::Create(RetVoidTy, GlobalValue::ExternalLinkage, "TestFn", M);
 
   // Set up the personality function
   TestF->setPersonalityFn(PersonalityF);

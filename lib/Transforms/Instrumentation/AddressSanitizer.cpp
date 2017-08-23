@@ -1711,7 +1711,7 @@ AddressSanitizerModule::CreateMetadataGlobal(Module &M, Constant *Initializer,
 IRBuilder<> AddressSanitizerModule::CreateAsanModuleDtor(Module &M) {
   AsanDtorFunction =
       Function::Create(FunctionType::get(Type::getVoidTy(*C), false),
-                       GlobalValue::InternalLinkage, kAsanModuleDtorName, &M);
+                       GlobalValue::InternalLinkage, kAsanModuleDtorName, M);
   BasicBlock *AsanDtorBB = BasicBlock::Create(*C, "", AsanDtorFunction);
 
   return IRBuilder<>(ReturnInst::Create(*C, AsanDtorBB));

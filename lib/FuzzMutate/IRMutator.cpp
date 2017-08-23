@@ -26,7 +26,7 @@ static void createEmptyFunction(Module &M) {
   LLVMContext &Context = M.getContext();
   Function *F = Function::Create(FunctionType::get(Type::getVoidTy(Context), {},
                                                    /*isVarArg=*/false),
-                                 GlobalValue::ExternalLinkage, "f", &M);
+                                 GlobalValue::ExternalLinkage, "f", M);
   BasicBlock *BB = BasicBlock::Create(Context, "BB", F);
   ReturnInst::Create(Context, BB);
 }

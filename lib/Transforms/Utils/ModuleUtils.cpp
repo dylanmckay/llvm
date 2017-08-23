@@ -160,7 +160,8 @@ std::pair<Function *, Function *> llvm::createSanitizerCtorAndInitFunctions(
       declareSanitizerInitFunction(M, InitName, InitArgTypes);
   Function *Ctor = Function::Create(
       FunctionType::get(Type::getVoidTy(M.getContext()), false),
-      GlobalValue::InternalLinkage, CtorName, &M);
+                        GlobalValue::InternalLinkage,
+                        CtorName, M);
   BasicBlock *CtorBB = BasicBlock::Create(M.getContext(), "", Ctor);
   IRBuilder<> IRB(ReturnInst::Create(M.getContext(), CtorBB));
   IRB.CreateCall(InitFunction, InitArgs);

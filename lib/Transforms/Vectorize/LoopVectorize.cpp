@@ -4989,7 +4989,7 @@ void InnerLoopVectorizer::vectorizeInstruction(Instruction &I) {
           // Generate a declaration
           FunctionType *FTy = FunctionType::get(RetTy, Tys, false);
           VectorF =
-              Function::Create(FTy, Function::ExternalLinkage, VFnName, M);
+              Function::Create(FTy, Function::ExternalLinkage, VFnName, *M);
           VectorF->copyAttributesFrom(F);
         }
       }

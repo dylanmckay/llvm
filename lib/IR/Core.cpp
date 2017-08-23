@@ -1781,8 +1781,9 @@ LLVMValueRef LLVMAddAlias(LLVMModuleRef M, LLVMTypeRef Ty, LLVMValueRef Aliasee,
 
 LLVMValueRef LLVMAddFunction(LLVMModuleRef M, const char *Name,
                              LLVMTypeRef FunctionTy) {
+  auto &Mod = *unwrap(M);
   return wrap(Function::Create(unwrap<FunctionType>(FunctionTy),
-                               GlobalValue::ExternalLinkage, Name, unwrap(M)));
+                               GlobalValue::ExternalLinkage, Name, Mod));
 }
 
 LLVMValueRef LLVMGetNamedFunction(LLVMModuleRef M, const char *Name) {

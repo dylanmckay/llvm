@@ -2890,7 +2890,7 @@ Error BitcodeReader::parseGlobalVarRecord(ArrayRef<uint64_t> Record) {
 Error BitcodeReader::parseFunctionRecord(ArrayRef<uint64_t> Record) {
   // v1: [type, callingconv, isproto, linkage, paramattr, alignment, section,
   // visibility, gc, unnamed_addr, prologuedata, dllstorageclass, comdat,
-  // prefixdata] (name in VST)
+  // prefixdata, personalityfn, addrspace] (name in VST)
   // v2: [strtab_offset, strtab_size, v1]
   StringRef Name;
   std::tie(Name, Record) = readNameFromStrtab(Record);
@@ -2909,8 +2909,13 @@ Error BitcodeReader::parseFunctionRecord(ArrayRef<uint64_t> Record) {
   if (CC & ~CallingConv::MaxID)
     return error("Invalid calling convention ID");
 
+  unsigned AddrSpace = TheModule->getDataLayout().getProgramAddressSpace();
+  if (Record.size() > 15)
+    AddrSpace = Record[15];
+
   Function *Func =
-      Function::Create(FTy, GlobalValue::ExternalLinkage, Name, TheModule);
+      Function::Create(FTy, GlobalValue::ExternalLinkage, AddrSpace, Name,
+                       TheModule);
 
   Func->setCallingConv(CC);
   bool isProto = Record[2];

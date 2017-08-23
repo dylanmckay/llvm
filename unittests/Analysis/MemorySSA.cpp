@@ -75,7 +75,7 @@ TEST_F(MemorySSATest, CreateALoad) {
   // updating by creating an access for the load.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -113,7 +113,7 @@ TEST_F(MemorySSATest, CreateLoadsAndStoreUpdater) {
   // and then a store in the entry.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -203,7 +203,7 @@ TEST_F(MemorySSATest, CreateALoadUpdater) {
   // load in the merge point
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -247,7 +247,7 @@ TEST_F(MemorySSATest, CreateALoadUpdater) {
 TEST_F(MemorySSATest, SinkLoad) {
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -297,7 +297,7 @@ TEST_F(MemorySSATest, MoveAStore) {
   // access.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -333,7 +333,7 @@ TEST_F(MemorySSATest, MoveAStoreUpdater) {
   // access.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -379,7 +379,7 @@ TEST_F(MemorySSATest, MoveAStoreUpdaterMove) {
   // the old access.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -423,7 +423,7 @@ TEST_F(MemorySSATest, MoveAStoreAllAround) {
   // block, then to before the load.  This does not destroy the old access.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -478,7 +478,7 @@ TEST_F(MemorySSATest, RemoveAPhi) {
   // removal cases.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -523,7 +523,7 @@ TEST_F(MemorySSATest, RemoveMemoryAccess) {
   // removal cases.
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
   BasicBlock *Entry(BasicBlock::Create(C, "", F));
   BasicBlock *Left(BasicBlock::Create(C, "", F));
   BasicBlock *Right(BasicBlock::Create(C, "", F));
@@ -596,7 +596,7 @@ TEST_F(MemorySSATest, RemoveMemoryAccess) {
 // }
 TEST_F(MemorySSATest, TestTripleStore) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "", F));
   Type *Int8 = Type::getInt8Ty(C);
   Value *Alloca = B.CreateAlloca(Int8, ConstantInt::get(Int8, 1), "A");
@@ -627,7 +627,7 @@ TEST_F(MemorySSATest, TestTripleStore) {
 // query. In that case, we'd cache that the node clobbered itself.
 TEST_F(MemorySSATest, TestStoreAndLoad) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "", F));
   Type *Int8 = Type::getInt8Ty(C);
   Value *Alloca = B.CreateAlloca(Int8, ConstantInt::get(Int8, 1), "A");
@@ -657,7 +657,7 @@ TEST_F(MemorySSATest, TestStoreAndLoad) {
 // meant to.
 TEST_F(MemorySSATest, TestStoreDoubleQuery) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "", F));
   Type *Int8 = Type::getInt8Ty(C);
   Value *Alloca = B.CreateAlloca(Int8, ConstantInt::get(Int8, 1), "A");
@@ -701,7 +701,7 @@ TEST_F(MemorySSATest, TestStoreDoubleQuery) {
 // walking* 'B'.
 TEST_F(MemorySSATest, PartialWalkerCacheWithPhis) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "A", F));
   Type *Int8 = Type::getInt8Ty(C);
   Constant *One = ConstantInt::get(Int8, 1);
@@ -765,7 +765,7 @@ TEST_F(MemorySSATest, PartialWalkerCacheWithPhis) {
 // FIXME: It may be easier/cleaner to just add an 'optimize uses?' flag to MSSA.
 TEST_F(MemorySSATest, WalkerInvariantLoadOpt) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "", F));
   Type *Int8 = Type::getInt8Ty(C);
   Constant *One = ConstantInt::get(Int8, 1);
@@ -794,7 +794,7 @@ TEST_F(MemorySSATest, WalkerInvariantLoadOpt) {
 // Test loads get reoptimized properly by the walker.
 TEST_F(MemorySSATest, WalkerReopt) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "", F));
   Type *Int8 = Type::getInt8Ty(C);
   Value *AllocaA = B.CreateAlloca(Int8, ConstantInt::get(Int8, 1), "A");
@@ -825,7 +825,7 @@ TEST_F(MemorySSATest, WalkerReopt) {
 // Test out MemorySSAUpdater::moveBefore
 TEST_F(MemorySSATest, MoveAboveMemoryDef) {
   F = Function::Create(FunctionType::get(B.getVoidTy(), {}, false),
-                       GlobalValue::ExternalLinkage, "F", &M);
+                       GlobalValue::ExternalLinkage, "F", M);
   B.SetInsertPoint(BasicBlock::Create(C, "", F));
 
   Type *Int8 = Type::getInt8Ty(C);
@@ -884,7 +884,7 @@ TEST_F(MemorySSATest, Irreducible) {
   IRBuilder<> B(C);
   F = Function::Create(
       FunctionType::get(B.getVoidTy(), {B.getInt8PtrTy()}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
 
   // Make blocks
   BasicBlock *IfBB = BasicBlock::Create(C, "if", F);

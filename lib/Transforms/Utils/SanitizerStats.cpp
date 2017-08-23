@@ -93,7 +93,7 @@ void SanitizerStatReport::finish() {
 
   // Create a global constructor to register NewModuleStatsGV.
   auto F = Function::Create(FunctionType::get(VoidTy, false),
-                            GlobalValue::InternalLinkage, "", M);
+                            GlobalValue::InternalLinkage, "", *M);
   auto BB = BasicBlock::Create(M->getContext(), "", F);
   IRBuilder<> B(BB);
 

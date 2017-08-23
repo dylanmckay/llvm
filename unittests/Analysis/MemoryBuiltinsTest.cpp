@@ -28,7 +28,7 @@ TEST(AllocSize, AllocationBuiltinsTest) {
 
   Function *AllocSizeFn = Function::Create(
       FunctionType::get(Type::getInt8PtrTy(Context), {ArgTy}, false),
-      GlobalValue::ExternalLinkage, "F", &M);
+      GlobalValue::ExternalLinkage, "F", M);
 
   AllocSizeFn->addFnAttr(Attribute::getWithAllocSizeArgs(Context, 1, None));
 

@@ -30,7 +30,7 @@ protected:
     M.reset(new Module("MyModule", Ctx));
     FunctionType *FTy = FunctionType::get(
         Type::getInt8PtrTy(Ctx), Type::getInt32Ty(Ctx), false /*=isVarArg*/);
-    F = Function::Create(FTy, Function::ExternalLinkage, "ba_func", M.get());
+    F = Function::Create(FTy, Function::ExternalLinkage, "ba_func", *M.get());
     F->setCallingConv(CallingConv::C);
 
     EntryBB = BasicBlock::Create(Ctx, "entry", F);
@@ -137,7 +137,7 @@ static Module *getExternal(LLVMContext &Ctx, StringRef FuncName) {
       Type::getVoidTy(Ctx), Type::getInt8PtrTy(Ctx), false /*=isVarArgs*/);
 
   Function *F =
-      Function::Create(FTy, Function::ExternalLinkage, FuncName, M);
+      Function::Create(FTy, Function::ExternalLinkage, FuncName, *M);
   F->setCallingConv(CallingConv::C);
 
   BasicBlock *BB = BasicBlock::Create(Ctx, "", F);
@@ -152,7 +152,7 @@ static Module *getInternal(LLVMContext &Ctx) {
       Type::getVoidTy(Ctx), Type::getInt8PtrTy(Ctx), false /*=isVarArgs*/);
 
   Function *F =
-      Function::Create(FTy, Function::InternalLinkage, "bar", InternalM);
+      Function::Create(FTy, Function::InternalLinkage, "bar", *InternalM);
   F->setCallingConv(CallingConv::C);
 
   BasicBlock *BB = BasicBlock::Create(Ctx, "", F);

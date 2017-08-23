@@ -137,7 +137,7 @@ namespace {
           llvm::Value *Declaration;
           if (FunctionType *FTy = dyn_cast<FunctionType>(Ty)) {
             Declaration = Function::Create(FTy, GlobalValue::ExternalLinkage,
-                                           CurI->getName(), &M);
+                                           CurI->getName(), M);
 
           } else {
             Declaration =

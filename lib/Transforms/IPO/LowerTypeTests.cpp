@@ -857,14 +857,14 @@ void LowerTypeTestsModule::importFunction(Function *F, bool isDefinition) {
   if (F->isDeclarationForLinker() && !isDefinition) {
     // Declaration of an external function.
     FDecl = Function::Create(F->getFunctionType(), GlobalValue::ExternalLinkage,
-                             Name + ".cfi_jt", &M);
+                             Name + ".cfi_jt", M);
     FDecl->setVisibility(GlobalValue::HiddenVisibility);
   } else if (isDefinition) {
     F->setName(Name + ".cfi");
     F->setLinkage(GlobalValue::ExternalLinkage);
     F->setVisibility(GlobalValue::HiddenVisibility);
     FDecl = Function::Create(F->getFunctionType(), GlobalValue::ExternalLinkage,
-                             Name, &M);
+                             Name, M);
     FDecl->setVisibility(Visibility);
   } else {
     // Function definition without type metadata, where some other translation
@@ -1024,7 +1024,7 @@ void LowerTypeTestsModule::moveInitializerToModuleConstructor(
     WeakInitializerFn = Function::Create(
         FunctionType::get(Type::getVoidTy(M.getContext()),
                           /* IsVarArg */ false),
-        GlobalValue::InternalLinkage, "__cfi_global_var_init", &M);
+        GlobalValue::InternalLinkage, "__cfi_global_var_init", M);
     BasicBlock *BB =
         BasicBlock::Create(M.getContext(), "entry", WeakInitializerFn);
     ReturnInst::Create(M.getContext(), BB);
@@ -1067,7 +1067,7 @@ void LowerTypeTestsModule::replaceWeakDeclarationWithJumpTablePtr(
   // placeholder first.
   Function *PlaceholderFn =
       Function::Create(cast<FunctionType>(F->getValueType()),
-                       GlobalValue::ExternalWeakLinkage, "", &M);
+                       GlobalValue::ExternalWeakLinkage, "", M);
   F->replaceAllUsesWith(PlaceholderFn);
 
   Constant *Target = ConstantExpr::getSelect(
@@ -1215,7 +1215,7 @@ void LowerTypeTestsModule::buildBitSetsFromFunctionsNative(
   Function *JumpTableFn =
       Function::Create(FunctionType::get(Type::getVoidTy(M.getContext()),
                                          /* IsVarArg */ false),
-                       GlobalValue::PrivateLinkage, ".cfi.jumptable", &M);
+                       GlobalValue::PrivateLinkage, ".cfi.jumptable", M);
   ArrayType *JumpTableType =
       ArrayType::get(getJumpTableEntryType(), Functions.size());
   auto JumpTable =
@@ -1514,7 +1514,7 @@ bool LowerTypeTestsModule::lower() {
         if (!F)
           F = Function::Create(
               FunctionType::get(Type::getVoidTy(M.getContext()), false),
-              GlobalVariable::ExternalLinkage, FunctionName, &M);
+              GlobalVariable::ExternalLinkage, FunctionName, M);
 
         // If the function is available_externally, remove its definition so
         // that it is handled the same way as a declaration. Later we will try

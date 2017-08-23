@@ -808,12 +808,12 @@ static void CleanupAndPrepareModules(BugDriver &BD,
       // Create a NEW `main' function with same type in the test module.
       Function *newMain =
           Function::Create(oldMain->getFunctionType(),
-                           GlobalValue::ExternalLinkage, "main", Test.get());
+                           GlobalValue::ExternalLinkage, "main", *Test.get());
       // Create an `oldmain' prototype in the test module, which will
       // corresponds to the real main function in the same module.
       Function *oldMainProto = Function::Create(oldMain->getFunctionType(),
                                                 GlobalValue::ExternalLinkage,
-                                                oldMain->getName(), Test.get());
+                                                oldMain->getName(), *Test.get());
       // Set up and remember the argument list for the main function.
       std::vector<Value *> args;
       for (Function::arg_iterator I = newMain->arg_begin(),
@@ -882,7 +882,7 @@ static void CleanupAndPrepareModules(BugDriver &BD,
           FunctionType *FuncTy = F->getFunctionType();
           Function *FuncWrapper =
               Function::Create(FuncTy, GlobalValue::InternalLinkage,
-                               F->getName() + "_wrapper", F->getParent());
+                               F->getName() + "_wrapper", *F->getParent());
           BasicBlock *EntryBB =
               BasicBlock::Create(F->getContext(), "entry", FuncWrapper);
           BasicBlock *DoCallBB =

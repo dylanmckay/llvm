@@ -288,7 +288,7 @@ TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx),
                                         /*isVarArg=*/false);
   Function *F =
-      Function::Create(FTy, Function::ExternalLinkage, "caller", M.get());
+      Function::Create(FTy, Function::ExternalLinkage, "caller", *M.get());
   BasicBlock *BB = BasicBlock::Create(Ctx, "", F);
 
   IRBuilder<> Builder(BB);
@@ -894,18 +894,18 @@ TEST_P(MaybeSparseInstrProfTest, instr_prof_symtab_module_test) {
   std::unique_ptr<Module> M = llvm::make_unique<Module>("MyModule.cpp", Ctx);
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx),
                                         /*isVarArg=*/false);
-  Function::Create(FTy, Function::ExternalLinkage, "Gfoo", M.get());
-  Function::Create(FTy, Function::ExternalLinkage, "Gblah", M.get());
-  Function::Create(FTy, Function::ExternalLinkage, "Gbar", M.get());
-  Function::Create(FTy, Function::InternalLinkage, "Ifoo", M.get());
-  Function::Create(FTy, Function::InternalLinkage, "Iblah", M.get());
-  Function::Create(FTy, Function::InternalLinkage, "Ibar", M.get());
-  Function::Create(FTy, Function::PrivateLinkage, "Pfoo", M.get());
-  Function::Create(FTy, Function::PrivateLinkage, "Pblah", M.get());
-  Function::Create(FTy, Function::PrivateLinkage, "Pbar", M.get());
-  Function::Create(FTy, Function::WeakODRLinkage, "Wfoo", M.get());
-  Function::Create(FTy, Function::WeakODRLinkage, "Wblah", M.get());
-  Function::Create(FTy, Function::WeakODRLinkage, "Wbar", M.get());
+  Function::Create(FTy, Function::ExternalLinkage, "Gfoo", *M.get());
+  Function::Create(FTy, Function::ExternalLinkage, "Gblah", *M.get());
+  Function::Create(FTy, Function::ExternalLinkage, "Gbar", *M.get());
+  Function::Create(FTy, Function::InternalLinkage, "Ifoo", *M.get());
+  Function::Create(FTy, Function::InternalLinkage, "Iblah", *M.get());
+  Function::Create(FTy, Function::InternalLinkage, "Ibar", *M.get());
+  Function::Create(FTy, Function::PrivateLinkage, "Pfoo", *M.get());
+  Function::Create(FTy, Function::PrivateLinkage, "Pblah", *M.get());
+  Function::Create(FTy, Function::PrivateLinkage, "Pbar", *M.get());
+  Function::Create(FTy, Function::WeakODRLinkage, "Wfoo", *M.get());
+  Function::Create(FTy, Function::WeakODRLinkage, "Wblah", *M.get());
+  Function::Create(FTy, Function::WeakODRLinkage, "Wbar", *M.get());
 
   InstrProfSymtab ProfSymtab;
   EXPECT_THAT_ERROR(ProfSymtab.create(*M), Succeeded());

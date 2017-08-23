@@ -28,7 +28,7 @@ struct TestFunction {
     IRBuilder<> B(Ctx);
     T = B.getInt8Ty();
     F = Function::Create(FunctionType::get(T, {B.getInt8PtrTy()}, false),
-                         GlobalValue::ExternalLinkage, "F", &M);
+                         GlobalValue::ExternalLinkage, "F", M);
     BB = BasicBlock::Create(Ctx, "", F);
     B.SetInsertPoint(BB);
     Argument *PointerArg = &*F->arg_begin();

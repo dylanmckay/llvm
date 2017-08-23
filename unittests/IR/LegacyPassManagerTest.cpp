@@ -427,7 +427,7 @@ namespace llvm {
       Function* func_test1 = Function::Create(
         /*Type=*/FuncTy_0,
         /*Linkage=*/GlobalValue::ExternalLinkage,
-        /*Name=*/"test1", mod);
+        /*Name=*/"test1", *mod);
       func_test1->setCallingConv(CallingConv::C);
       AttributeList func_test1_PAL;
       func_test1->setAttributes(func_test1_PAL);
@@ -435,7 +435,7 @@ namespace llvm {
       Function* func_test2 = Function::Create(
         /*Type=*/FuncTy_0,
         /*Linkage=*/GlobalValue::ExternalLinkage,
-        /*Name=*/"test2", mod);
+        /*Name=*/"test2", *mod);
       func_test2->setCallingConv(CallingConv::C);
       AttributeList func_test2_PAL;
       func_test2->setAttributes(func_test2_PAL);
@@ -443,7 +443,7 @@ namespace llvm {
       Function* func_test3 = Function::Create(
         /*Type=*/FuncTy_0,
         /*Linkage=*/GlobalValue::ExternalLinkage,
-        /*Name=*/"test3", mod);
+        /*Name=*/"test3", *mod);
       func_test3->setCallingConv(CallingConv::C);
       AttributeList func_test3_PAL;
       func_test3->setAttributes(func_test3_PAL);
@@ -451,7 +451,7 @@ namespace llvm {
       Function* func_test4 = Function::Create(
         /*Type=*/FuncTy_2,
         /*Linkage=*/GlobalValue::ExternalLinkage,
-        /*Name=*/"test4", mod);
+        /*Name=*/"test4", *mod);
       func_test4->setCallingConv(CallingConv::C);
       AttributeList func_test4_PAL;
       func_test4->setAttributes(func_test4_PAL);

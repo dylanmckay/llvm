@@ -273,11 +273,11 @@ static void addCygMingExtraModule(ExecutionEngine &EE, LLVMContext &Context,
   if (TargetTriple.isArch64Bit()) {
     Result = Function::Create(
       TypeBuilder<int64_t(void), false>::get(Context),
-      GlobalValue::ExternalLinkage, "__main", M.get());
+      GlobalValue::ExternalLinkage, "__main", *M.get());
   } else {
     Result = Function::Create(
       TypeBuilder<int32_t(void), false>::get(Context),
-      GlobalValue::ExternalLinkage, "__main", M.get());
+      GlobalValue::ExternalLinkage, "__main", *M.get());
   }
   BasicBlock *BB = BasicBlock::Create(Context, "__main", Result);
   Builder.SetInsertPoint(BB);

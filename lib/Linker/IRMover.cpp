@@ -613,7 +613,7 @@ Function *IRLinker::copyFunctionProto(const Function *SF) {
   // bring SF over.
   auto *F =
       Function::Create(TypeMap.get(SF->getFunctionType()),
-                       GlobalValue::ExternalLinkage, SF->getName(), &DstM);
+                       GlobalValue::ExternalLinkage, SF->getName(), DstM);
   F->copyAttributesFrom(SF);
   return F;
 }
@@ -643,7 +643,7 @@ GlobalValue *IRLinker::copyGlobalValueProto(const GlobalValue *SGV,
     else if (SGV->getValueType()->isFunctionTy())
       NewGV =
           Function::Create(cast<FunctionType>(TypeMap.get(SGV->getValueType())),
-                           GlobalValue::ExternalLinkage, SGV->getName(), &DstM);
+                           GlobalValue::ExternalLinkage, SGV->getName(), DstM);
     else
       NewGV = new GlobalVariable(
           DstM, TypeMap.get(SGV->getValueType()),

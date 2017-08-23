@@ -861,7 +861,7 @@ void InstrProfiling::emitRegistration() {
   auto *Int64Ty = Type::getInt64Ty(M->getContext());
   auto *RegisterFTy = FunctionType::get(VoidTy, false);
   auto *RegisterF = Function::Create(RegisterFTy, GlobalValue::InternalLinkage,
-                                     getInstrProfRegFuncsName(), M);
+                                     getInstrProfRegFuncsName(), *M);
   RegisterF->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
   if (Options.NoRedZone)
     RegisterF->addFnAttr(Attribute::NoRedZone);
@@ -869,7 +869,7 @@ void InstrProfiling::emitRegistration() {
   auto *RuntimeRegisterTy = FunctionType::get(VoidTy, VoidPtrTy, false);
   auto *RuntimeRegisterF =
       Function::Create(RuntimeRegisterTy, GlobalVariable::ExternalLinkage,
-                       getInstrProfRegFuncName(), M);
+                       getInstrProfRegFuncName(), *M);
 
   IRBuilder<> IRB(BasicBlock::Create(M->getContext(), "", RegisterF));
   for (Value *Data : UsedVars)
@@ -882,7 +882,7 @@ void InstrProfiling::emitRegistration() {
         FunctionType::get(VoidTy, makeArrayRef(ParamTypes), false);
     auto *NamesRegisterF =
         Function::Create(NamesRegisterTy, GlobalVariable::ExternalLinkage,
-                         getInstrProfNamesRegFuncName(), M);
+                         getInstrProfNamesRegFuncName(), *M);
     IRB.CreateCall(NamesRegisterF, {IRB.CreateBitCast(NamesVar, VoidPtrTy),
                                     IRB.getInt64(NamesSize)});
   }
@@ -909,7 +909,7 @@ void InstrProfiling::emitRuntimeHook() {
   // Make a function that uses it.
   auto *User = Function::Create(FunctionType::get(Int32Ty, false),
                                 GlobalValue::LinkOnceODRLinkage,
-                                getInstrProfRuntimeHookVarUseFuncName(), M);
+                                getInstrProfRuntimeHookVarUseFuncName(), *M);
   User->addFnAttr(Attribute::NoInline);
   if (Options.NoRedZone)
     User->addFnAttr(Attribute::NoRedZone);
@@ -955,7 +955,7 @@ void InstrProfiling::emitInitialization() {
   auto *VoidTy = Type::getVoidTy(M->getContext());
   auto *F = Function::Create(FunctionType::get(VoidTy, false),
                              GlobalValue::InternalLinkage,
-                             getInstrProfInitFuncName(), M);
+                             getInstrProfInitFuncName(), *M);
   F->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
   F->addFnAttr(Attribute::NoInline);
   if (Options.NoRedZone)

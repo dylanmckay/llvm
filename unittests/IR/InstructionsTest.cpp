@@ -62,7 +62,7 @@ protected:
     FArgTypes.push_back(Type::getInt64Ty(Ctx));
     FunctionType *FTy =
         FunctionType::get(Type::getVoidTy(Ctx), FArgTypes, false);
-    F = Function::Create(FTy, Function::ExternalLinkage, "", M.get());
+    F = Function::Create(FTy, Function::ExternalLinkage, "", *M.get());
   }
 
   LLVMContext Ctx;

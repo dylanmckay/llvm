@@ -244,7 +244,8 @@ Function *llvm::CloneFunction(Function *F, ValueToValueMapTy &VMap,
 
   // Create the new function...
   Function *NewF =
-      Function::Create(FTy, F->getLinkage(), F->getName(), F->getParent());
+      Function::Create(FTy, F->getLinkage(), F->getAddressSpace(),
+                       F->getName(), F->getParent());
 
   // Loop over the arguments, copying the names of the mapped arguments over...
   Function::arg_iterator DestI = NewF->arg_begin();

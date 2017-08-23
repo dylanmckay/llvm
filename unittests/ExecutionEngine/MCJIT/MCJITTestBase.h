@@ -49,7 +49,7 @@ protected:
   Function *startFunction(Module *M, StringRef Name) {
     Function *Result = Function::Create(
       TypeBuilder<FuncType, false>::get(Context),
-      GlobalValue::ExternalLinkage, Name, M);
+      GlobalValue::ExternalLinkage, Name, *M);
 
     BasicBlock *BB = BasicBlock::Create(Context, Name, Result);
     Builder.SetInsertPoint(BB);
@@ -110,7 +110,7 @@ protected:
   Function *insertExternalReferenceToFunction(Module *M, StringRef Name) {
     Function *Result = Function::Create(
                          TypeBuilder<FuncType, false>::get(Context),
-                         GlobalValue::ExternalLinkage, Name, M);
+                         GlobalValue::ExternalLinkage, Name, *M);
     return Result;
   }
 
@@ -119,7 +119,7 @@ protected:
                                               FunctionType *FuncTy) {
     Function *Result = Function::Create(FuncTy,
                                         GlobalValue::ExternalLinkage,
-                                        Name, M);
+                                        Name, *M);
     return Result;
   }
 
@@ -127,7 +127,7 @@ protected:
   Function *insertExternalReferenceToFunction(Module *M, Function *Func) {
     Function *Result = Function::Create(Func->getFunctionType(),
                                         GlobalValue::ExternalLinkage,
-                                        Func->getName(), M);
+                                        Func->getName(), *M);
     return Result;
   }
 

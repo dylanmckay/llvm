@@ -140,7 +140,7 @@ Function *GenEmptyFunction(Module *M) {
   auto *FuncTy = FunctionType::get(Type::getVoidTy(Context), ArgsTy, false);
   // Pick a unique name to describe the input parameters
   Twine Name = "autogen_SD" + Twine{SeedCL};
-  auto *Func = Function::Create(FuncTy, GlobalValue::ExternalLinkage, Name, M);
+  auto *Func = Function::Create(FuncTy, GlobalValue::ExternalLinkage, Name, *M);
   Func->setCallingConv(CallingConv::C);
   return Func;
 }

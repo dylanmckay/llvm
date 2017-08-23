@@ -140,7 +140,7 @@ TEST(VerifierTest, InvalidFunctionLinkage) {
   Module M("M", C);
 
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(C), /*isVarArg=*/false);
-  Function::Create(FTy, GlobalValue::LinkOnceODRLinkage, "foo", &M);
+  Function::Create(FTy, GlobalValue::LinkOnceODRLinkage, "foo", M);
   std::string Error;
   raw_string_ostream ErrorOS(Error);
   EXPECT_TRUE(verifyModule(M, &ErrorOS));

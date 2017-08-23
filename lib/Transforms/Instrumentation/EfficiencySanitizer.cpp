@@ -523,7 +523,7 @@ void EfficiencySanitizer::createDestructor(Module &M, Constant *ToolInfoArg) {
   EsanDtorFunction = Function::Create(FunctionType::get(Type::getVoidTy(*Ctx),
                                                         false),
                                       GlobalValue::InternalLinkage,
-                                      EsanModuleDtorName, &M);
+                                      EsanModuleDtorName, M);
   ReturnInst::Create(*Ctx, BasicBlock::Create(*Ctx, "", EsanDtorFunction));
   IRBuilder<> IRB_Dtor(EsanDtorFunction->getEntryBlock().getTerminator());
   Function *EsanExit = checkSanitizerInterfaceFunction(

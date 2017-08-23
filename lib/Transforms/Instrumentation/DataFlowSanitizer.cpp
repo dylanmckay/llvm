@@ -537,8 +537,8 @@ DataFlowSanitizer::buildWrapperFunction(Function *F, StringRef NewFName,
                                         GlobalValue::LinkageTypes NewFLink,
                                         FunctionType *NewFT) {
   FunctionType *FT = F->getFunctionType();
-  Function *NewF = Function::Create(NewFT, NewFLink, NewFName,
-                                    F->getParent());
+  Function *NewF = Function::Create(NewFT, NewFLink, F->getAddressSpace(),
+                                    NewFName, F->getParent());
   NewF->copyAttributesFrom(F);
   NewF->removeAttributes(
       AttributeList::ReturnIndex,
@@ -711,7 +711,8 @@ bool DataFlowSanitizer::runOnModule(Module &M) {
       // easily identify cases of mismatching ABIs.
       if (getInstrumentedABI() == IA_Args && !IsZeroArgsVoidRet) {
         FunctionType *NewFT = getArgsFunctionType(FT);
-        Function *NewF = Function::Create(NewFT, F.getLinkage(), "", &M);
+        Function *NewF = Function::Create(NewFT, F.getLinkage(),
+                                          F.getAddressSpace(), "", &M);
         NewF->copyAttributesFrom(&F);
         NewF->removeAttributes(
             AttributeList::ReturnIndex,

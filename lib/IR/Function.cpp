@@ -195,6 +195,22 @@ LLVMContext &Function::getContext() const {
   return getType()->getContext();
 }
 
+Function *Function::Create(FunctionType *Ty, LinkageTypes Linkage,
+                           const Twine &N, Module &M) {
+  return Create(Ty, Linkage, M.getDataLayout().getProgramAddressSpace(),
+                N, &M);
+}
+
+Function *Function::CreateBefore(Function &InsertBefore, FunctionType *Ty,
+                                 LinkageTypes Linkage, const Twine &N) {
+  auto &M = *InsertBefore.getParent();
+  unsigned AddrSpace = M.getDataLayout().getProgramAddressSpace();
+  Function *F = Create(Ty, Linkage, AddrSpace, N);
+
+  M.getFunctionList().insert(InsertBefore.getIterator(), F);
+  return F;
+}
+
 void Function::removeFromParent() {
   getParent()->getFunctionList().remove(getIterator());
 }
@@ -207,10 +223,11 @@ void Function::eraseFromParent() {
 // Function Implementation
 //===----------------------------------------------------------------------===//
 
-Function::Function(FunctionType *Ty, LinkageTypes Linkage, const Twine &name,
-                   Module *ParentModule)
+Function::Function(FunctionType *Ty, LinkageTypes Linkage, unsigned AddrSpace,
+                   const Twine &name, Module *ParentModule)
     : GlobalObject(Ty, Value::FunctionVal,
-                   OperandTraits<Function>::op_begin(this), 0, Linkage, name),
+                   OperandTraits<Function>::op_begin(this), 0, Linkage, name,
+                   AddrSpace),
       NumArgs(Ty->getNumParams()) {
   assert(FunctionType::isValidReturnType(getReturnType()) &&
          "invalid return type");

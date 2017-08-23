@@ -160,7 +160,7 @@ TEST(OperationsTest, SplitBlock) {
   Module M("M", Ctx);
   Function *F = Function::Create(FunctionType::get(Type::getVoidTy(Ctx), {},
                                                    /*isVarArg=*/false),
-                                 GlobalValue::ExternalLinkage, "f", &M);
+                                 GlobalValue::ExternalLinkage, "f", M);
   auto SBOp = fuzzerop::splitBlockDescriptor(1);
 
   // Create a block with only a return and split it on the return.
@@ -201,7 +201,7 @@ TEST(OperationsTest, SplitBlockWithPhis) {
   Module M("M", Ctx);
   Function *F = Function::Create(FunctionType::get(Type::getVoidTy(Ctx), {},
                                                    /*isVarArg=*/false),
-                                 GlobalValue::ExternalLinkage, "f", &M);
+                                 GlobalValue::ExternalLinkage, "f", M);
   auto SBOp = fuzzerop::splitBlockDescriptor(1);
 
   // Create 3 blocks with an if-then branch.
@@ -239,7 +239,7 @@ TEST(OperationsTest, GEP) {
   Module M("M", Ctx);
   Function *F = Function::Create(FunctionType::get(Type::getVoidTy(Ctx), {},
                                                    /*isVarArg=*/false),
-                                 GlobalValue::ExternalLinkage, "f", &M);
+                                 GlobalValue::ExternalLinkage, "f", M);
   auto *BB = BasicBlock::Create(Ctx, "BB", F);
   auto *RI = ReturnInst::Create(Ctx, BB);
 
