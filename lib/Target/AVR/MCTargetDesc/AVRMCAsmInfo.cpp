@@ -18,12 +18,17 @@
 namespace llvm {
 
 AVRMCAsmInfo::AVRMCAsmInfo(const Triple &TT) {
+  // Architecture settings.
   CodePointerSize = 2;
   CalleeSaveStackSlotSize = 2;
+
+  // Assembly language settings.
   CommentString = ";";
   PrivateGlobalPrefix = ".L";
-  UsesELFSectionDirectiveForBSS = true;
   UseIntegratedAssembler = true;
+
+  UsesELFSectionDirectiveForBSS = true;
+  SupportsDebugInformation = true;
 }
 
 } // end of namespace llvm

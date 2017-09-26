@@ -99,6 +99,8 @@ private:
     case Triple::arm:
     case Triple::armeb:
       return visitARM(Rel, R, Value);
+    case Triple::avr:
+      return visitAVR(Rel, R, Value);
     case Triple::lanai:
       return visitLanai(Rel, R, Value);
     case Triple::mipsel:
@@ -252,6 +254,18 @@ private:
     }
     HasError = true;
     return 0;
+  }
+
+  uint64_t visitAVR(uint32_t Rel, RelocationRef R, uint64_t Value) {
+    switch (Rel) {
+    case ELF::R_AVR_32:
+      return Value & 0xFFFFFFFF;
+    case ELF::R_AVR_16_PM:
+      return Value & 0xFFFF;
+    default:
+      HasError = true;
+      return 0;
+    }
   }
 
   uint64_t visitLanai(uint32_t Rel, RelocationRef R, uint64_t Value) {

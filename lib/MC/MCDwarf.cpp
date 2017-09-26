@@ -29,6 +29,7 @@
 #include "llvm/MC/MCStreamer.h"
 #include "llvm/MC/MCSymbol.h"
 #include "llvm/Support/Casting.h"
+#include "llvm/Support/Debug.h"
 #include "llvm/Support/Endian.h"
 #include "llvm/Support/EndianStream.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -613,11 +614,14 @@ static void EmitGenDwarfAranges(MCStreamer *MCOS,
   MCOS->EmitIntValue(2, 2);
   // The 4 byte offset to the compile unit in the .debug_info from the start
   // of the .debug_info.
-  if (InfoSectionSymbol)
+  if (InfoSectionSymbol) {
+    dbgs() << "yes info section symbol!\n";
     MCOS->EmitSymbolValue(InfoSectionSymbol, 4,
                           asmInfo->needsDwarfSectionOffsetDirective());
-  else
+  } else {
+    dbgs() << "no info section symbol!\n";
     MCOS->EmitIntValue(0, 4);
+  }
   // The 1 byte size of an address.
   MCOS->EmitIntValue(AddrSize, 1);
   // The 1 byte size of a segment descriptor, we use a value of zero.
