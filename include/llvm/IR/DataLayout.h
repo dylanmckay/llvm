@@ -419,6 +419,16 @@ public:
   /// \brief Returns the minimum ABI-required alignment for the specified type.
   unsigned getABITypeAlignment(Type *Ty) const;
 
+  /// Checks if a type is aligned to a single byte.
+  bool isUnaligned(Type *Ty) const {
+    return getABITypeAlignment(Ty) == 1;
+  }
+
+  /// Checks if a type has an alignment greater than one byte.
+  bool isAligned(Type *Ty) const {
+    return getABITypeAlignment(Ty) > 1;
+  }
+
   /// \brief Returns the minimum ABI-required alignment for an integer type of
   /// the specified bitwidth.
   unsigned getABIIntegerTypeAlignment(unsigned BitWidth) const;
