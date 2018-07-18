@@ -49,6 +49,13 @@ public:
 
 //===----------------------------------------------------------------------===//
 
+/// Used to describe information about a single subtarget feature.
+struct SubtargetFeatureInfo {
+  const StringRef Name;
+  /// The name of the type the feature is defined with in tablegen.
+  const StringRef TypeName;
+};
+
 /// Used to provide key value pairs for feature and CPU bit flags.
 struct SubtargetFeatureKV {
   const char *Key;                      ///< K-V key string

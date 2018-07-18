@@ -76,6 +76,7 @@ class SubtargetEmitter {
 
   void Enumeration(raw_ostream &OS);
   unsigned FeatureKeyValues(raw_ostream &OS);
+  unsigned FeatureInfos(raw_ostream &OS);
   unsigned CPUKeyValues(raw_ostream &OS);
   void FormItineraryStageString(const std::string &Names,
                                 Record *ItinData, std::string &ItinString,
@@ -218,6 +219,36 @@ unsigned SubtargetEmitter::FeatureKeyValues(raw_ostream &OS) {
   OS << "};\n";
 
   return NumFeatures;
+}
+
+unsigned SubtargetEmitter::FeatureInfos(raw_ostream &OS) {
+  // Gather and sort all the features
+  std::vector<Record*> FeatureList =
+                           Records.getAllDerivedDefinitions("SubtargetFeature");
+
+  if (FeatureList.empty())
+    return 0;
+
+  // Begin feature table
+  OS << "// Feature name lookup table\n"
+     << "extern const SubtargetFeatureInfo " << Target
+     << "FeatureInfos[] = {\n";
+
+  // For each feature
+  for (unsigned i = 0, N = FeatureList.size(); i < N; ++i) {
+    // Next feature
+    Record *Feature = FeatureList[i];
+
+    StringRef TypeName = Feature->getType()->getClasses()[0]->getName();
+    StringRef CommandLineName = Feature->getValueAsString("Name");
+
+    // Format: { "name", "type name" },
+    OS << "  { \"" << CommandLineName << "\", \"" << TypeName << "\"},\n";
+  }
+
+  // End feature table
+  OS << "};\n";
+  return FeatureList.size();
 }
 
 //
@@ -1749,14 +1780,15 @@ void SubtargetEmitter::emitGenMCSubtargetInfo(raw_ostream &OS) {
   OS << "struct " << Target
      << "GenMCSubtargetInfo : public MCSubtargetInfo {\n";
   OS << "  " << Target << "GenMCSubtargetInfo(const Triple &TT, \n"
-     << "    StringRef CPU, StringRef FS, ArrayRef<SubtargetFeatureKV> PF,\n"
+     << "    StringRef CPU, StringRef FS, ArrayRef<SubtargetFeatureInfo> PI,\n"
+     << "    ArrayRef<SubtargetFeatureKV> PF,\n"
      << "    ArrayRef<SubtargetFeatureKV> PD,\n"
      << "    const SubtargetInfoKV *ProcSched,\n"
      << "    const MCWriteProcResEntry *WPR,\n"
      << "    const MCWriteLatencyEntry *WL,\n"
      << "    const MCReadAdvanceEntry *RA, const InstrStage *IS,\n"
      << "    const unsigned *OC, const unsigned *FP) :\n"
-     << "      MCSubtargetInfo(TT, CPU, FS, PF, PD, ProcSched,\n"
+     << "      MCSubtargetInfo(TT, CPU, FS, PI, PF, PD, ProcSched,\n"
      << "                      WPR, WL, RA, IS, OC, FP) { }\n\n"
      << "  unsigned resolveVariantSchedClass(unsigned SchedClass,\n"
      << "      const MCInst *MI, unsigned CPUID) const override {\n"
@@ -1787,6 +1819,8 @@ void SubtargetEmitter::run(raw_ostream &OS) {
 #if 0
   OS << "namespace {\n";
 #endif
+  unsigned NumFeatureInfos = FeatureInfos(OS);
+  OS << "\n";
   unsigned NumFeatures = FeatureKeyValues(OS);
   OS << "\n";
   unsigned NumProcs = CPUKeyValues(OS);
@@ -1804,6 +1838,10 @@ void SubtargetEmitter::run(raw_ostream &OS) {
      << "MCSubtargetInfoImpl("
      << "const Triple &TT, StringRef CPU, StringRef FS) {\n";
   OS << "  return new " << Target << "GenMCSubtargetInfo(TT, CPU, FS, ";
+  if (NumFeatureInfos)
+    OS << Target << "FeatureInfos, ";
+  else
+    OS << "None, ";
   if (NumFeatures)
     OS << Target << "FeatureKV, ";
   else
@@ -1873,6 +1911,7 @@ void SubtargetEmitter::run(raw_ostream &OS) {
 
   OS << "#include \"llvm/CodeGen/TargetSchedule.h\"\n\n";
   OS << "namespace llvm {\n";
+  OS << "extern const llvm::SubtargetFeatureInfo " << Target << "FeatureInfos[];\n";
   OS << "extern const llvm::SubtargetFeatureKV " << Target << "FeatureKV[];\n";
   OS << "extern const llvm::SubtargetFeatureKV " << Target << "SubTypeKV[];\n";
   OS << "extern const llvm::SubtargetInfoKV " << Target << "ProcSchedKV[];\n";
@@ -1892,6 +1931,10 @@ void SubtargetEmitter::run(raw_ostream &OS) {
   OS << ClassName << "::" << ClassName << "(const Triple &TT, StringRef CPU, "
      << "StringRef FS)\n"
      << "  : TargetSubtargetInfo(TT, CPU, FS, ";
+  if (NumFeatureInfos)
+    OS << "makeArrayRef(" << Target << "FeatureInfos, " << NumFeatureInfos << "), ";
+  else
+    OS << "None, ";
   if (NumFeatures)
     OS << "makeArrayRef(" << Target << "FeatureKV, " << NumFeatures << "), ";
   else

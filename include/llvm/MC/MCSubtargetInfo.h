@@ -36,6 +36,7 @@ class MCInst;
 class MCSubtargetInfo {
   Triple TargetTriple;
   std::string CPU; // CPU being targeted.
+  ArrayRef<SubtargetFeatureInfo> FeatureInfos;
   ArrayRef<SubtargetFeatureKV> ProcFeatures;  // Processor feature list
   ArrayRef<SubtargetFeatureKV> ProcDesc;  // Processor descriptions
 
@@ -54,6 +55,7 @@ class MCSubtargetInfo {
 public:
   MCSubtargetInfo(const MCSubtargetInfo &) = default;
   MCSubtargetInfo(const Triple &TT, StringRef CPU, StringRef FS,
+                  ArrayRef<SubtargetFeatureInfo> PI,
                   ArrayRef<SubtargetFeatureKV> PF,
                   ArrayRef<SubtargetFeatureKV> PD,
                   const SubtargetInfoKV *ProcSched,
@@ -75,6 +77,11 @@ public:
 
   bool hasFeature(unsigned Feature) const {
     return FeatureBits[Feature];
+  }
+
+  const SubtargetFeatureInfo& getFeatureInfo(unsigned Feature) const {
+    assert(Feature < FeatureInfos.size() && "feature index out of range");
+    return FeatureInfos[Feature];
   }
 
 protected:

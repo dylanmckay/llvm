@@ -61,6 +61,7 @@ class Triple;
 class TargetSubtargetInfo : public MCSubtargetInfo {
 protected: // Can only create subclasses...
   TargetSubtargetInfo(const Triple &TT, StringRef CPU, StringRef FS,
+                      ArrayRef<SubtargetFeatureInfo> PI,
                       ArrayRef<SubtargetFeatureKV> PF,
                       ArrayRef<SubtargetFeatureKV> PD,
                       const SubtargetInfoKV *ProcSched,
