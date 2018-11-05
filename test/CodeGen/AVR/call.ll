@@ -172,15 +172,17 @@ define void @testcallprologue() {
 define i32 @icall(i32 (i32)* %foo) {
 ; CHECK-LABEL: icall:
 ; CHECK: movw r30, r24
-; CHECK: ldi r22, 147
-; CHECK: ldi r23, 248
-; CHECK: ldi r24, 214
-; CHECK: ldi r25, 198
-; CHECK: icall
-; CHECK: subi r22, 251
-; CHECK: sbci r23, 255
-; CHECK: sbci r24, 255
-; CHECK: sbci r25, 255
+; CHECK-NEXT: ldi r22, 147
+; CHECK-NEXT: ldi r23, 248
+; CHECK-NEXT: ldi r24, 214
+; CHECK-NEXT: ldi r25, 198
+; CHECK-NEXT: icall
+; CHECK-NEXT: movw r18, r22
+; CHECK-NEXT: subi r24, 251
+; CHECK-NEXT: sbci r25, 255
+; CHECK-NEXT: sbci r18, 255
+; CHECK-NEXT: sbci r19, 255
+
   %1 = call i32 %foo(i32 3335977107)
   %2 = add nsw i32 %1, 5
   ret i32 %2
@@ -200,10 +202,12 @@ define i32 @externcall(float %a, float %b) {
 ; CHECK: movw r20, [[REG1]]
 ; CHECK: call __divsf3
 ; CHECK: call foofloat
-; CHECK: subi r22, 251
-; CHECK: sbci r23, 255
-; CHECK: sbci r24, 255
+; CHECK: movw r18, r22
+; CHECK: subi r24, 251
 ; CHECK: sbci r25, 255
+; CHECK: sbci r18, 255
+; CHECK: sbci r19, 255
+
   %1 = fdiv float %b, %a
   %2 = call i32 @foofloat(float %1)
   %3 = add nsw i32 %2, 5

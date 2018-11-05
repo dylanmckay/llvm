@@ -44,8 +44,9 @@ define i16 @sdiv16(i16 %a, i16 %b) {
 define i32 @udiv32(i32 %a, i32 %b) {
 ; CHECK-LABEL: udiv32:
 ; CHECK: call __udivmodsi4
-; CHECK-NEXT: movw r22, r18
-; CHECK-NEXT: movw r24, r20
+; CHECK-NEXT: movw r18, r22
+; CHECK-NEXT: movw r22, r24
+; CHECK-NEXT: movw r24, r18
 ; CHECK-NEXT: ret
   %quot = udiv i32 %a, %b
   ret i32 %quot
@@ -55,8 +56,9 @@ define i32 @udiv32(i32 %a, i32 %b) {
 define i32 @sdiv32(i32 %a, i32 %b) {
 ; CHECK-LABEL: sdiv32:
 ; CHECK: call __divmodsi4
-; CHECK-NEXT: movw r22, r18
-; CHECK-NEXT: movw r24, r20
+; CHECK-NEXT: movw r18, r22
+; CHECK-NEXT: movw r22, r24
+; CHECK-NEXT: movw r24, r18
 ; CHECK-NEXT: ret
   %quot = sdiv i32 %a, %b
   ret i32 %quot

@@ -42,6 +42,8 @@ define i16 @srem16(i16 %a, i16 %b) {
 define i32 @urem32(i32 %a, i32 %b) {
 ; CHECK-LABEL: urem32:
 ; CHECK: call __udivmodsi4
+; CHECK: movw r22, r20
+; CHECK: movw r24, r18
 ; CHECK-NEXT: ret
   %rem = urem i32 %a, %b
   ret i32 %rem
@@ -51,6 +53,8 @@ define i32 @urem32(i32 %a, i32 %b) {
 define i32 @srem32(i32 %a, i32 %b) {
 ; CHECK-LABEL: srem32:
 ; CHECK: call __divmodsi4
+; CHECK: movw r22, r20
+; CHECK: movw r24, r18
 ; CHECK-NEXT: ret
   %rem = srem i32 %a, %b
   ret i32 %rem

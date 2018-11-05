@@ -1298,6 +1298,35 @@ SDValue AVRTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
                          InVals);
 }
 
+/// Reverse splitted return values to get the "big endian" format required
+/// to agree with the calling convention ABI.
+static void ReverseArgumentsToBigEndian(MachineFunction &MF,
+                                        SmallVector<CCValAssign, 16> &RVLocs) {
+  if (RVLocs.size() > 1) {
+    // Some hackery because SelectionDAGBuilder does not split
+    // up arguments properly
+    Type *retType = MF.getFunction().getReturnType();
+    if (retType->isStructTy()) {
+      if (retType->getNumContainedTypes() > 1 &&
+          retType->getNumContainedTypes() > RVLocs.size()) {
+        for (unsigned i = 0, pos = 0;
+            i < retType->getNumContainedTypes(); ++i) {
+          Type *field = retType->getContainedType(i);
+          if(field->isIntegerTy() && field->getIntegerBitWidth() > 16) {
+            int Size = field->getIntegerBitWidth() / 16;
+            std::reverse(RVLocs.begin()+ pos, RVLocs.end() + pos + Size);
+            pos += Size;
+          } else {
+            pos++;
+          }
+        }
+      }
+    } else {
+      std::reverse(RVLocs.begin(), RVLocs.end());
+    }
+  }
+}
+
 /// Lower the result values of a call into the
 /// appropriate copies out of appropriate physical registers.
 ///
@@ -1314,12 +1343,6 @@ SDValue AVRTargetLowering::LowerCallResult(
   // Handle runtime calling convs.
   auto CCFunction = CCAssignFnForReturn(CallConv);
   CCInfo.AnalyzeCallResult(Ins, CCFunction);
-
-  if (CallConv != CallingConv::AVR_BUILTIN && RVLocs.size() > 1) {
-    // Reverse splitted return values to get the "big endian" format required
-    // to agree with the calling convention ABI.
-    std::reverse(RVLocs.begin(), RVLocs.end());
-  }
 
   // Copy all of the result registers out of their specified physreg.
   for (CCValAssign const &RVLoc : RVLocs) {
@@ -1383,9 +1406,7 @@ AVRTargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
 
   // Reverse splitted return values to get the "big endian" format required
   // to agree with the calling convention ABI.
-  if (e > 1) {
-    std::reverse(RVLocs.begin(), RVLocs.end());
-  }
+  ReverseArgumentsToBigEndian(MF, RVLocs);
 
   SDValue Flag;
   SmallVector<SDValue, 4> RetOps(1, Chain);

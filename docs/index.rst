@@ -285,6 +285,7 @@ For API clients and LLVM developers.
    HowToUseAttributes
    NVPTXUsage
    AMDGPUUsage
+   AVRTarget
    StackMaps
    InAlloca
    BigEndianNEON
@@ -389,6 +390,10 @@ For API clients and LLVM developers.
 
 :doc:`AMDGPUUsage`
    This document describes using the AMDGPU backend to compile GPU kernels.
+
+:doc:`AVRTarget`
+   This document contains pieces of information an AVR compiler developer may
+   want to know.
 
 :doc:`StackMaps`
   LLVM support for mapping instruction addresses to the location of
