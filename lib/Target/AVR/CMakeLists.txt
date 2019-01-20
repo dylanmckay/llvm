@@ -25,6 +25,7 @@ add_llvm_target(AVRCodeGen
   AVRSubtarget.cpp
   AVRTargetMachine.cpp
   AVRTargetObjectFile.cpp
+  AVRTargetTransformInfo.cpp
 
   DEPENDS
   intrinsics_gen

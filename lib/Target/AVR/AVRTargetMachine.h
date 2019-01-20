@@ -40,6 +40,8 @@ public:
     return this->TLOF.get();
   }
 
+  TargetTransformInfo getTargetTransformInfo(const Function &F) override;
+
   TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
 
   bool isMachineVerifierClean() const override {
