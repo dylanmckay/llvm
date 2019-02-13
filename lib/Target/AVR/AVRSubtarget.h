@@ -72,6 +72,8 @@ public:
   bool hasBREAK() const { return m_hasBREAK; }
   bool hasTinyEncoding() const { return m_hasTinyEncoding; }
 
+  bool canLoadProgramMemory() const { return hasLPM(); }
+
   /// Gets the ELF architecture for the e_flags field
   /// of an ELF object file.
   unsigned getELFArch() const {
