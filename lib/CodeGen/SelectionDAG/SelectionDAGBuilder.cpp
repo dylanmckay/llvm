@@ -3534,7 +3534,11 @@ void SelectionDAGBuilder::visitAddrSpaceCast(const User &I) {
   unsigned SrcAS = SV->getType()->getPointerAddressSpace();
   unsigned DestAS = I.getType()->getPointerAddressSpace();
 
-  if (!TLI.isNoopAddrSpaceCast(SrcAS, DestAS))
+  // Do not insert address space conversion code when the target doesn't
+  // require it. Also skip cast expansion when casting an undefined
+  // value, as a casted undefined value is still an undefined value.
+  if (!TLI.isNoopAddrSpaceCast(SrcAS, DestAS) &&
+      !isa<UndefValue>(SV))
     N = DAG.getAddrSpaceCast(getCurSDLoc(), DestVT, N, SrcAS, DestAS);
 
   setValue(&I, N);
